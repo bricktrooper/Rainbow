@@ -1,6 +1,6 @@
 (footprint "CK_Switch" (version 20211014) (generator pcbnew)
   (layer "F.Cu")
-  (tedit 63AD1586)
+  (tedit 63B2AB5F)
   (attr through_hole)
   (fp_text reference "REF**" (at -0.22543 -7.44928) (layer "F.SilkS")
     (effects (font (size 1.001921 1.001921) (thickness 0.15)))
@@ -21,4 +21,9 @@
   (pad "1" thru_hole rect (at 0 -4.7) (size 2.45 2.45) (drill 1.85) (layers *.Cu *.Mask) (tstamp bc8f81dc-01d3-40c3-a3fd-a862cd12ea53))
   (pad "2" thru_hole circle (at 0 0) (size 2.45 2.45) (drill 1.85) (layers *.Cu *.Mask) (tstamp d5406567-8449-41cd-a5d4-71185065ffa0))
   (pad "3" thru_hole circle (at 0 4.7) (size 2.45 2.45) (drill 1.85) (layers *.Cu *.Mask) (tstamp 7d1685ae-884c-43c5-8bd2-7ee0eadd0cca))
+  (model "${KIPRJMOD}/models/CK_Switch.step"
+    (offset (xyz 0 0 0))
+    (scale (xyz 1 1 1))
+    (rotate (xyz -90 0 0))
+  )
 )

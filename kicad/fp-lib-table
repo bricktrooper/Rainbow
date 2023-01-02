@@ -1,3 +1,4 @@
 (fp_lib_table
   (lib (name "CK_Switch")(type "KiCad")(uri "${KIPRJMOD}/footprints/CK_Switch")(options "")(descr ""))
+  (lib (name "Tensility_Barrel_Jack")(type "KiCad")(uri "${KIPRJMOD}/footprints/Tensility_Barrel_Jack")(options "")(descr ""))
 )
