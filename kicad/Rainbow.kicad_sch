@@ -2364,7 +2364,7 @@
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid c2db2e9b-18cc-4503-9689-b5fe3ce87c52)
     (property "Reference" "J2" (id 0) (at 116.205 40.64 0))
-    (property "Value" "USB SERIAL" (id 1) (at 116.205 43.18 0))
+    (property "Value" "UART" (id 1) (at 116.205 43.18 0))
     (property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical" (id 2) (at 115.57 50.8 0)
       (effects (font (size 1.27 1.27)) hide)
     )
@@ -2733,7 +2733,7 @@
       (reference "J1") (unit 1) (value "PICKit3") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical")
     )
     (path "/c2db2e9b-18cc-4503-9689-b5fe3ce87c52"
-      (reference "J2") (unit 1) (value "USB SERIAL") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical")
+      (reference "J2") (unit 1) (value "UART") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical")
     )
     (path "/a21b73ca-fae1-410e-a604-b8b2a0adc85d"
       (reference "J3") (unit 1) (value "JUMPER") (footprint "Connector_PinSocket_2.54mm:PinSocket_1x02_P2.54mm_Vertical")
