@@ -8,11 +8,11 @@ Please see docs/pic16f690.html for configuration settings.
 
 // CONFIG1 //
 
-#pragma config FCMEN    = OFF      // Disable fail-safe clock monitor timer.
-#pragma config CSWEN    = OFF      // Disable clock switching.
-#pragma config CLKOUTEN = OFF      // Disable clock output on OSC2.
-#pragma config RSTOSC   = HFINT1   // Use internal oscillator for 1 MHz clock.
-#pragma config FEXTOSC = OFF       // Disable external oscillator.
+#pragma config FCMEN = OFF       // Disable fail-safe clock monitor timer.
+#pragma config CSWEN = OFF       // Disable clock switching.
+#pragma config CLKOUTEN = OFF    // Disable clock output on OSC2.
+#pragma config RSTOSC = HFINT1   // Use internal oscillator for 1 MHz clock.
+#pragma config FEXTOSC = OFF     // Disable external oscillator.
 
 // CONFIG2 //
 

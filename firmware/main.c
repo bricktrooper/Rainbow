@@ -1,9 +1,14 @@
 #include <xc.h>
 
-#include "config.h"
+#include "system.h"
+#include "led.h"
 
 void main(void)
 {
-  TRISAbits.TRISA5 = 0;
-  PORTAbits.RA5 = 1;
+	system_initialize();
+
+	while (1)
+	{
+
+	}
 }
