@@ -5,6 +5,7 @@
 #include "config.h"
 #include "gpio.h"
 #include "led.h"
+#include "uart.h"
 
 #define LED_DELAY_US   50000
 #define LED_BLINKS     3
@@ -37,6 +38,7 @@ void system_initialize(void)
 	// PERIPHERALS //
 
 	gpio_initialize();
+	uart_initialize();
 
 	// DRIVERS //
 
