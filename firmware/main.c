@@ -1,6 +1,8 @@
 #include <xc.h>
 
 #include "system.h"
+#include "led.h"
+#include "uart.h"
 
 #include <stdio.h>
 
@@ -10,6 +12,10 @@ void main(void)
 
 	while (1)
 	{
-		printf("Hello\r\n");
+		char byte;
+		uart_receive(&byte, 1);
+		led_on();
+		uart_transmit(&byte, 1);
+		led_off();
 	}
 }
