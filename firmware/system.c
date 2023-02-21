@@ -25,15 +25,15 @@ void system_initialize(void)
 {
 	// OSCILLATOR //
 
-	OSCCON1bits.NOSC = 0b110;     // High-frequency internal oscillator.
+	OSCCON1bits.NOSC = 0b110;     // high-frequency internal oscillator
 	OSCCON1bits.NDIV = 0b0000;    // 1:1 oscillator postscaler (f_clock = f_oscillator)
-	OSCFRQbits.HFFRQ = 0b011;     // 8 MHz oscillator.
-	OSCTUNEbits.HFTUN = 0b00000;  // Use calibrated oscillator centre frequency.
+	OSCFRQbits.HFFRQ = 0b011;     // 8 MHz oscillator
+	OSCTUNEbits.HFTUN = 0b00000;  // use calibrated oscillator centre frequency
 
 	// INTERRUPTS //
 
-	INTCONbits.GIE = 1;    // Disable all interrupts temporarily.
-	INTCONbits.PEIE = 1;   // Enable peripherial interrupts
+	INTCONbits.GIE = 0;    // disable all interrupts temporarily
+	INTCONbits.PEIE = 1;   // enable peripherial interrupts
 
 	// PERIPHERALS //
 
@@ -46,8 +46,8 @@ void system_initialize(void)
 
 	// FINALIZE //
 
-	startup_indicator();   // Flash status LED.
-	INTCONbits.GIE = 1;    // Re-enable all interrupts.
+	startup_indicator();   // flash status LED
+	INTCONbits.GIE = 1;    // re-enable all interrupts
 }
 
 //void system_abort(Abort abort)
