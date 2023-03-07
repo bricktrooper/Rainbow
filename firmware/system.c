@@ -6,6 +6,7 @@
 #include "gpio.h"
 #include "led.h"
 #include "uart.h"
+#include "pwm.h"
 
 #define LED_DELAY_US   50000
 #define LED_BLINKS     3
@@ -39,6 +40,7 @@ void system_initialize(void)
 
 	gpio_initialize();
 	uart_initialize();
+	pwm_initialize();
 
 	// DRIVERS //
 
