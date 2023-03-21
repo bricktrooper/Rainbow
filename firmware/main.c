@@ -13,11 +13,12 @@ void main(void)
 
 	while (1)
 	{
-		//char byte;
-		//uart_receive(&byte, 1);
-		//led_on();
-		//uart_transmit(&byte, 1);
-		//led_off();
+		char byte;
+		uart_receive(&byte, 1);
+		led_on();
+		uart_transmit(&byte, 1);
+		led_off();
+		continue;
 		for (U8 i = 0; i < 100; i++)
 		{
 			pwm_duty(i);
