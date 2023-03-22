@@ -15,7 +15,7 @@ DIR += peripherals
 DIR += drivers
 
 # artifacts folder
-ART = build
+ART = artifacts
 
 # hex binary name
 BIN = rainbow
