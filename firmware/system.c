@@ -7,6 +7,7 @@
 #include "led.h"
 #include "uart.h"
 #include "pwm.h"
+#include "rgb.h"
 
 #define LED_DELAY_US   50000
 #define LED_BLINKS     3
@@ -45,6 +46,7 @@ void system_initialize(void)
 	// DRIVERS //
 
 	led_initialize();
+	rgb_initialize();
 
 	// FINALIZE //
 
