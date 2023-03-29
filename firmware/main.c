@@ -13,25 +13,15 @@ void main(void)
 
 	while (1)
 	{
-		//char byte;
-		//uart_receive(&byte, 1);
-		//led_on();
-		//uart_transmit(&byte, 1);
-		//led_off();
-		//continue;
-
 		for (U8 i = 0; i < 255; i++)
 		{
-			pwm_duty(i);
-			//printf("PWM3CON 0x%02X, T2CLKCON 0x%02X, T2PR 0x%02X, PWM3DCH 0x%02X, PWM3DCL 0x%02X, T2CON 0x%02X\r\n", PWM3CON, T2CLKCON, T2PR, PWM3DCH, PWM3DCL, T2CON);
-			printf("[%u] PWM3DC %u\r\n", i, ((PWM3DCH << 8) | PWM3DCL) >> 6);
+			pwm_duty(PWM3, i);
 			_delay(10000);
 		}
 
 		for (U8 i = 255; i > 0; i--)
 		{
-			pwm_duty(i);
-			printf("PWM3DCH 0x%02X, PWM3DCL 0x%02X\r\n", PWM3DCH, PWM3DCL);
+			pwm_duty(PWM3, i);
 			_delay(10000);
 		}
 	}
