@@ -11,9 +11,8 @@ void pwm_initialize(void)
 	PWM3CONbits.PWM3POL = 0;   // active high output waveform
 	T2CLKCONbits.CS = 0b0001;   // Fosc/4
 	T2PR = 0x65;   // PWM period for Timer 2
-	U16 duty = 51;
-	PWM3DCH = duty >> 2;
-	PWM3DCL = duty << 6;
+	PWM3DCH = 0;
+	PWM3DCL = 0;
 	PIR4bits.TMR2IF = 0;
 	T2CONbits.CKPS = 0b100;   // 1:16 prescaler
 	T2CONbits.ON = 1;
@@ -23,9 +22,9 @@ void pwm_initialize(void)
 	PWM3CONbits.PWM3EN = 1;
 }
 
-void pwm_duty(U8 ratio)
+void pwm_duty(U8 value)
 {
-	U16 duty = (ratio * 4 * (T2PR + 1)) / 100;
+	U32 duty = ((U32)value * 4 * (T2PR + 1)) / 255;
 	PWM3DCH = (U8)(duty >> 2);
 	PWM3DCL = (U8)(duty << 6);
 }

@@ -4,6 +4,6 @@
 #include "types.h"
 
 void pwm_initialize(void);
-void pwm_duty(U8 ratio);
+void pwm_duty(U8 value);
 
 #endif /* PWM_H */
