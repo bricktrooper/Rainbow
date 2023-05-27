@@ -12,7 +12,7 @@ void link_receive(Header * header, void * data)
 
 		while (byte != MAGIC)
 		{
-			uart_receive(byte, 1);
+			uart_receive(&byte, 1);
 		}
 
 		uart_receive((U8 *)header + sizeof(header->magic), sizeof(Header) - sizeof(header->magic));
@@ -43,7 +43,7 @@ U8 link_checksum(Header * header, void * data)
 		checksum ^= bytes[i];
 	}
 
-	for (U8 i = 0; i < length; i++)
+	for (U8 i = 0; i < header->length; i++)
 	{
 		U8 * bytes = (U8 *)data;
 		checksum ^= bytes[i];

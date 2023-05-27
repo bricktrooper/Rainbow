@@ -14,5 +14,6 @@ void main(void)
 	while (1)
 	{
 		rgb_rainbow();
+		//uart_echo();
 	}
 }

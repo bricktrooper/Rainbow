@@ -25,6 +25,6 @@ struct Header
 
 void link_receive(Header * header, void * data);
 void link_transmit(Opcode opcode, void * data, U8 length);
-void link_checksum(Header * header, void * data);
+U8 link_checksum(Header * header, void * data);
 
 #endif /* LINK_H */

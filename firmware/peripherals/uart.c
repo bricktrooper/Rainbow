@@ -77,3 +77,10 @@ void putch(char byte)
 {
 	uart_transmit(&byte, 1);
 }
+
+void uart_echo(void)
+{
+	char byte;
+	uart_receive(&byte, 1);
+	uart_transmit(&byte, 1);
+}
