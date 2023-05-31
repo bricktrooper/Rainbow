@@ -2,17 +2,17 @@
 
 #include "uart.h"
 
-#define MAGIC   0xBEEF
+#define MAGIC   0xCE23
 
 void link_receive(Header * header, void * data)
 {
 	do
 	{
-		U16 byte = ~MAGIC;
+		header->magic = ~MAGIC;
 
-		while (byte != MAGIC)
+		while (header->magic != MAGIC)
 		{
-			uart_receive(&byte, 1);
+			uart_receive(&header->magic, sizeof(header->magic));
 		}
 
 		uart_receive((U8 *)header + sizeof(header->magic), sizeof(Header) - sizeof(header->magic));
@@ -21,16 +21,16 @@ void link_receive(Header * header, void * data)
 	while (link_checksum(header, data) != header->checksum);
 }
 
-void link_transmit(Opcode opcode, void * data, U8 length)
+void link_transmit(Result result)
 {
 	Header header;
 	header.magic = MAGIC;
-	header.opcode = opcode;
-	header.length = length;
-	header.checksum = link_checksum(&header, data);
+	header.opcode = OPCODE_RESPONSE;
+	header.length = sizeof(Result);
+	header.checksum = link_checksum(&header, &result);
 
 	uart_transmit(&header, sizeof(Header));
-	uart_transmit(data, length);
+	uart_transmit(&result, sizeof(Result));
 }
 
 U8 link_checksum(Header * header, void * data)
