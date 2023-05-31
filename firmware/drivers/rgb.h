@@ -9,6 +9,6 @@ void rgb_green(U8 value);
 void rgb_blue(U8 value);
 void rgb_colour(U8 red, U8 green, U8 blue);
 void rgb_off(void);
-void rgb_rainbow(void);
+void rgb_rainbow(U8 brightness);
 
 #endif /* RGB_H */

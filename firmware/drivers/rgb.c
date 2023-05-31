@@ -5,7 +5,7 @@
 #include "pwm.h"
 
 #define RAINBOW_TRANISTION_DELAY_US   20000
-#define RAINBOW_SOLID_DELAY_US        2000000
+#define RAINBOW_SOLID_DELAY_US        200000
 
 void rgb_initialize(void)
 {
@@ -39,51 +39,61 @@ void rgb_off(void)
 	rgb_colour(0, 0, 0);
 }
 
-void rgb_rainbow(void)
+void rgb_rainbow(U8 brightness)
 {
-	rgb_red(255);
+	rgb_red(brightness);
 
 	// fade in green
-	for (U8 i = 0; i < 255; i++)
+	for (U8 i = 0; i < brightness; i++)
 	{
 		rgb_green(i);
 		_delay(RAINBOW_TRANISTION_DELAY_US);
 	}
+
+	_delay(RAINBOW_SOLID_DELAY_US);
 
 	// fade out red
-	for (U8 i = 255; i > 0; i--)
+	for (U8 i = brightness; i > 0; i--)
 	{
 		rgb_red(i);
 		_delay(RAINBOW_TRANISTION_DELAY_US);
 	}
 
+	_delay(RAINBOW_SOLID_DELAY_US);
+
 	// fade in blue
-	for (U8 i = 0; i < 255; i++)
+	for (U8 i = 0; i < brightness; i++)
 	{
 		rgb_blue(i);
 		_delay(RAINBOW_TRANISTION_DELAY_US);
 	}
 
+	_delay(RAINBOW_SOLID_DELAY_US);
+
 	// fade out green
-	for (U8 i = 255; i > 0; i--)
+	for (U8 i = brightness; i > 0; i--)
 	{
 		rgb_green(i);
 		_delay(RAINBOW_TRANISTION_DELAY_US);
 	}
 
+	_delay(RAINBOW_SOLID_DELAY_US);
+
 	// fade in red
-	for (U8 i = 0; i < 255; i++)
+	for (U8 i = 0; i < brightness; i++)
 	{
 		rgb_red(i);
 		_delay(RAINBOW_TRANISTION_DELAY_US);
 	}
 
+	_delay(RAINBOW_SOLID_DELAY_US);
+
 	// fade out blue
-	for (U8 i = 255; i > 0; i--)
+	for (U8 i = brightness; i > 0; i--)
 	{
 		rgb_blue(i);
 		_delay(RAINBOW_TRANISTION_DELAY_US);
 	}
 
-	_delay(1000000);
+	_delay(RAINBOW_SOLID_DELAY_US);
 }

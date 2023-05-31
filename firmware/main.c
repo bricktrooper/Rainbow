@@ -13,7 +13,7 @@ void main(void)
 
 	while (1)
 	{
-		rgb_rainbow();
+		rgb_rainbow(32);
 		//uart_echo();
 	}
 }
