@@ -23,54 +23,58 @@ void uart_initialize(void)
 	BAUD1CONbits.WUE = 0;     // disable wake-up
 	BAUD1CONbits.ABDEN = 0;   // disable auto-baud detect
 
-	SP1BRGH = 0;   // 117600 bps @ 8 MHz (~115200 bps)
+	// 117600 bps @ 8 MHz (~115200 bps)
+	SP1BRGH = 0;
 	SP1BRGL = 16;
 
-	RX1DTPPS = PPSI_RC5;        // use RC5 for RX1
-	TRISCbits.TRISC5 = INPUT;   // configure RC5 as input
-	ANSELCbits.ANSC5 = DIGITAL; // configure RC5 as digital
+	RX1DTPPS = PPSI_RC5;          // use RC5 for RX1
+	TRISCbits.TRISC5 = INPUT;     // configure RC5 as input
+	ANSELCbits.ANSC5 = DIGITAL;   // configure RC5 as digital
 
-	RC4PPS = PPSO_TX1;          // use RC4 for TX1
-	TRISCbits.TRISC4 = OUTPUT;  // configure RC4 as output
-	ANSELCbits.ANSC4 = DIGITAL; // configure RC4 as digital
+	RC4PPS = PPSO_TX1;            // use RC4 for TX1
+	TRISCbits.TRISC4 = OUTPUT;    // configure RC4 as output
+	ANSELCbits.ANSC4 = DIGITAL;   // configure RC4 as digital
 }
 
 void uart_transmit(void const * data, U8 size)
 {
-	//if (data == NULL)
-	//{
-	//	system_fatal();
-	//}
-
-	char * bytes = (char *)data;      // cast data element to char pointer
-
-	for (int i = 0; i < size; i++)
+	if (data == NULL)
 	{
-		while (!PIR3bits.TX1IF);   // Wait for the the TX register to empty.
-		TX1REG = bytes[i];	       // Write 8 b data into the TX register to start the transmission.
+		system_fatal();
 	}
-}
-
-void uart_receive(void * data, U8 size)
-{
-	//if (data == NULL)
-	//{
-	//	system_fatal();
-	//}
 
 	char * bytes = (char *)data;
 
 	for (int i = 0; i < size; i++)
 	{
-		// Detect and clear overrun errors
+		while (!PIR3bits.TX1IF);   // wait for the TX register to empty
+		TX1REG = bytes[i];	       // write byte to TX register to start transmission
+	}
+}
+
+void uart_receive(void * data, U8 size)
+{
+	if (data == NULL)
+	{
+		system_fatal();
+	}
+
+	char * bytes = (char *)data;
+
+	for (int i = 0; i < size; i++)
+	{
+		// detect overrun errors
 		if (RC1STAbits.OERR)
 		{
-			RC1STAbits.CREN = 0;
-			RC1STAbits.CREN = 1;
+			system_fatal();
+
+			// clear overrun error
+			//RC1STAbits.CREN = 0;
+			//RC1STAbits.CREN = 1;
 		}
 
-		while (!PIR3bits.RC1IF);   // Wait for a byte to arrive in the RX register.
-		bytes[i] = RC1REG;         // Read the byte from the RX register to clear RC1IF.
+		while (!PIR3bits.RC1IF);   // wait for a byte to arrive in the RX register
+		bytes[i] = RC1REG;         // read byte from RX register to clear RC1IF
 	}
 }
 
