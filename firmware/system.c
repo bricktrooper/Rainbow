@@ -9,7 +9,7 @@
 #include "pwm.h"
 #include "rgb.h"
 
-#define LED_DELAY_US   50000
+#define LED_DELAY_US   200000
 #define LED_BLINKS     3
 
 static void startup_indicator(void)
