@@ -52,31 +52,18 @@ void system_initialize(void)
 	interrupts_global(true);   // unmask all interrupts
 }
 
-//void system_abort(Abort abort)
-//{
-//	while (button_released())
-//	{
-//		if (abort == ABORT_LOW_BATTERY)
-//		{
-//			led_pulse();   // Fade LED in and out during low battery.
-//		}
-//		else
-//		{
-//			led_blink();   // Blink LED during firmware errors.
-//		}
+void system_abort(void)
+{
+	while (1)
+	{
+		led_blink();   // blink LED forever
+	}
+}
 
-//		if (abort < ABORT_count)
-//		{
-//			char * reason = system_abort_reasons[abort];
-//			char * newline = "\r\n";
-
-//			uart_transmit(reason, strlen(reason) + 1);
-//			uart_transmit(newline, strlen(newline) + 1);
-//		}
-//	}
-
-//	system_reboot();
-//}
+void system_fatal(void)
+{
+	system_abort();
+}
 
 //static Status read_sensors(Sensor_Group group, void ** data, U8 * length)
 //{
