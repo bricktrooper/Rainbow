@@ -1,6 +1,9 @@
 #ifndef PPS_H
 #define PPS_H
 
+typedef enum PPS_Input PPS_Input;
+typedef enum PPS_Output PPS_Output;
+
 enum PPS_Input
 {
 	PPSI_RA0 = 0x00,
