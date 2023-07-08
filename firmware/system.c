@@ -3,6 +3,7 @@
 #include <xc.h>
 
 #include "config.h"
+#include "oscillator.h"
 #include "gpio.h"
 #include "led.h"
 #include "uart.h"
@@ -27,10 +28,7 @@ void system_initialize(void)
 {
 	// OSCILLATOR //
 
-	OSCCON1bits.NOSC = 0b110;     // high-frequency internal oscillator
-	OSCCON1bits.NDIV = 0b0000;    // 1:1 oscillator postscaler (f_clock = f_oscillator)
-	OSCFRQbits.HFFRQ = 0b011;     // 8 MHz oscillator
-	OSCTUNEbits.HFTUN = 0b00000;  // use calibrated oscillator centre frequency
+	oscillator_initialize();
 
 	// INTERRUPTS //
 
