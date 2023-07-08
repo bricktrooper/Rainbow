@@ -2414,7 +2414,7 @@
     (property "Value" "47uF" (id 1) (at 132.08 140.5381 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm" (id 2) (at 129.54 139.7 0)
+    (property "Footprint" "Capacitor_THT:CP_Radial_D5.0mm_P2.50mm" (id 2) (at 129.54 139.7 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 129.54 139.7 0)
@@ -2885,7 +2885,7 @@
     (property "Value" "220uF" (id 1) (at 181.61 146.8881 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "Capacitor_THT:CP_Radial_D5.0mm_P2.00mm" (id 2) (at 179.07 146.05 0)
+    (property "Footprint" "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm" (id 2) (at 179.07 146.05 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 179.07 146.05 0)
@@ -3540,10 +3540,10 @@
       (reference "#PWR0108") (unit 1) (value "GNDREF") (footprint "")
     )
     (path "/0325dd2a-1f8c-41f7-a857-7ea7489044aa"
-      (reference "C1") (unit 1) (value "47uF") (footprint "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm")
+      (reference "C1") (unit 1) (value "47uF") (footprint "Capacitor_THT:CP_Radial_D5.0mm_P2.50mm")
     )
     (path "/891d4b06-a128-411f-8ead-2db2757641ec"
-      (reference "C2") (unit 1) (value "220uF") (footprint "Capacitor_THT:CP_Radial_D5.0mm_P2.00mm")
+      (reference "C2") (unit 1) (value "220uF") (footprint "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm")
     )
     (path "/53d7abcc-e4a0-452b-adc0-1fef0c892a9b"
       (reference "C3") (unit 1) (value "0.1uF") (footprint "Capacitor_THT:C_Disc_D3.0mm_W1.6mm_P2.50mm")
