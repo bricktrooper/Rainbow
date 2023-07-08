@@ -4,6 +4,7 @@
 
 #include "config.h"
 #include "oscillator.h"
+#include "interrupts.h"
 #include "gpio.h"
 #include "led.h"
 #include "uart.h"
@@ -32,8 +33,7 @@ void system_initialize(void)
 
 	// INTERRUPTS //
 
-	INTCONbits.GIE = 0;    // disable all interrupts temporarily
-	INTCONbits.PEIE = 1;   // enable peripherial interrupts
+	interrupts_initialize();
 
 	// PERIPHERALS //
 
@@ -48,8 +48,8 @@ void system_initialize(void)
 
 	// FINALIZE //
 
-	startup_indicator();   // flash status LED
-	INTCONbits.GIE = 1;    // re-enable all interrupts
+	startup_indicator();       // flash status LED
+	interrupts_global(true);   // unmask all interrupts
 }
 
 //void system_abort(Abort abort)
