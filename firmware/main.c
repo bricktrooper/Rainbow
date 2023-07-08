@@ -5,8 +5,6 @@
 #include "uart.h"
 #include "rgb.h"
 
-#include <stdio.h>
-
 void main(void)
 {
 	system_initialize();

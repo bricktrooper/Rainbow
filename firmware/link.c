@@ -30,7 +30,7 @@ void link_transmit(Result result)
 	header.checksum = link_checksum(&header, &result);
 
 	uart_transmit(&header, sizeof(Header));
-	uart_transmit(&result, sizeof(Result));
+	uart_transmit(&result, header.length);
 }
 
 U8 link_checksum(Header * header, void * data)
