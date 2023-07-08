@@ -3,6 +3,7 @@
 #include <xc.h>
 
 #include "system.h"
+#include "pps.h"
 
 void pwm_initialize(void)
 {
@@ -14,9 +15,9 @@ void pwm_initialize(void)
 	ANSELCbits.ANSC1 = DIGITAL;   // configure RC1 as digital
 	ANSELCbits.ANSC2 = DIGITAL;   // configure RC2 as digital
 
-	RC0PPS = 0x0B;   // connect RC0 to PWM3
-	RC1PPS = 0x0C;   // connect RC1 to PWM4
-	RC2PPS = 0x0D;   // connect RC2 to PWM5
+	RC0PPS = PPSO_PWM3;   // connect RC0 to PWM3
+	RC1PPS = PPSO_PWM4;   // connect RC1 to PWM4
+	RC2PPS = PPSO_PWM5;   // connect RC2 to PWM5
 
 	// active high output waveform
 	PWM3CONbits.PWM3POL = 0;

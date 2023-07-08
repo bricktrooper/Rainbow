@@ -1,0 +1,59 @@
+#ifndef PPS_H
+#define PPS_H
+
+enum PPS_Input
+{
+	PPSI_RA0 = 0x00,
+	PPSI_RA1 = 0x01,
+	PPSI_RA2 = 0x02,
+	PPSI_RA3 = 0x03,
+	PPSI_RA4 = 0x04,
+	PPSI_RA5 = 0x05,
+	PPSI_RB4 = 0x0C,
+	PPSI_RB5 = 0x0D,
+	PPSI_RB6 = 0x0E,
+	PPSI_RB7 = 0x0F,
+	PPSI_RC0 = 0x10,
+	PPSI_RC1 = 0x11,
+	PPSI_RC2 = 0x12,
+	PPSI_RC3 = 0x13,
+	PPSI_RC4 = 0x14,
+	PPSI_RC5 = 0x15,
+	PPSI_RC6 = 0x16,
+	PPSI_RC7 = 0x17
+};
+
+enum PPS_Output
+{
+	PPSO_CLKR  = 0x1B,
+	PPSO_NCO1  = 0x1A,
+	PPSO_TMR0  = 0x19,
+	PPSO_SDO1  = 0x16,
+	PPSO_SDA1  = PPSO_SDO1,
+	PPSO_SCK1  = 0x15,
+	PPSO_SCL1  = PPSO_SCK1,
+	PPSO_C2    = 0x14,
+	PPSO_C1    = 0x13,
+	PPSO_DT2   = 0x12,
+	PPSO_TX2   = 0x11,
+	PPSO_CK2   = PPSO_TX2,
+	PPSO_DT1   = 0x10,
+	PPSO_TX1   = 0x0F,
+	PPSO_CK1   = PPSO_TX1,
+	PPSO_PWM6  = 0x0E,
+	PPSO_PWM5  = 0x0D,
+	PPSO_PWM4  = 0x0C,
+	PPSO_PWM3  = 0x0B,
+	PPSO_CCP2  = 0x0A,
+	PPSO_CCP1  = 0x09,
+	PPSO_CWG1D = 0x08,
+	PPSO_CWG1C = 0x07,
+	PPSO_CWG1B = 0x06,
+	PPSO_CWG1A = 0x05,
+	PPSO_CLC4  = 0x04,
+	PPSO_CLC3  = 0x03,
+	PPSO_CLC2  = 0x02,
+	PPSO_CLC1  = 0x01
+};
+
+#endif /* PPS_H */

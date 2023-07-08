@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 #include "system.h"
+#include "pps.h"
 
 void uart_initialize(void)
 {
@@ -25,13 +26,13 @@ void uart_initialize(void)
 	SP1BRGH = 0;   // 117600 bps @ 8 MHz (~115200 bps)
 	SP1BRGL = 16;
 
-	RX1DTPPS = 0x15;              // use RC5 for RX1
-	TRISCbits.TRISC5 = INPUT;     // configure RC5 as input
-	ANSELCbits.ANSC5 = DIGITAL;   // configre RC5 as digital
+	RX1DTPPS = PPSI_RC5;        // use RC5 for RX1
+	TRISCbits.TRISC5 = INPUT;   // configure RC5 as input
+	ANSELCbits.ANSC5 = DIGITAL; // configure RC5 as digital
 
-	RC4PPS = 0x0F;                // use RC4 for TX1
-	TRISCbits.TRISC4 = OUTPUT;    // configure RC4 as output
-	ANSELCbits.ANSC4 = DIGITAL;   // configre RC4 as digital
+	RC4PPS = PPSO_TX1;          // use RC4 for TX1
+	TRISCbits.TRISC4 = OUTPUT;  // configure RC4 as output
+	ANSELCbits.ANSC4 = DIGITAL; // configure RC4 as digital
 }
 
 void uart_transmit(void const * data, U8 size)
