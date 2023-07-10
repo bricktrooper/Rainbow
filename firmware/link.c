@@ -1,24 +1,44 @@
 #include "link.h"
 
 #include "uart.h"
+#include "system.h"
 
 #define MAGIC   0xCE23
 
-void link_receive(Header * header, void * data)
+Result link_receive(Header * header, void * data, U8 length)
 {
+	// wait for magic number to be received
 	do
 	{
-		header->magic = ~MAGIC;
-
-		while (header->magic != MAGIC)
-		{
-			uart_receive(&header->magic, sizeof(header->magic));
-		}
-
-		uart_receive((U8 *)header + sizeof(header->magic), sizeof(Header) - sizeof(header->magic));
-		uart_receive(data, header->length);
+		uart_receive(&header->magic, sizeof(header->magic));
 	}
-	while (link_checksum(header, data) != header->checksum);
+	while (header->magic != MAGIC);
+
+	// receive rest of header
+	uart_receive((U8 *)header + sizeof(header->magic), sizeof(Header) - sizeof(header->magic));
+
+	// receive data
+	if (length < header->length)
+	{
+		ABORT(ABORT_RX_BUFFER_OVERFLOW);
+	}
+
+	uart_receive(data, header->length);
+
+	// verify checksum
+	if (link_checksum(header, data) != header->checksum)
+	{
+		return RESULT_ERROR_CHECKSUM;
+	}
+
+	// verify data length
+	if (link_data_length(header->opcode) != header->length)
+	{
+		return RESULT_ERROR_DATA_LENGTH;
+	}
+
+	// packet is valid
+	return RESULT_SUCCESS;
 }
 
 void link_transmit(Result result)
@@ -26,7 +46,7 @@ void link_transmit(Result result)
 	Header header;
 	header.magic = MAGIC;
 	header.opcode = OPCODE_RESPONSE;
-	header.length = sizeof(Result);
+	header.length = link_data_length(header.opcode);
 	header.checksum = link_checksum(&header, &result);
 
 	uart_transmit(&header, sizeof(Header));
@@ -50,4 +70,16 @@ U8 link_checksum(Header * header, void * data)
 	}
 
 	return checksum;
+}
+
+U8 link_data_length(Opcode opcode)
+{
+	switch (opcode)
+	{
+		case OPCODE_PING:       return 0;
+		case OPCODE_RGB:        return sizeof(RGB);
+		case OPCODE_BRIGHTNESS: return sizeof(U8);
+		case OPCODE_RAINBOW:    return 0;
+		case OPCODE_RESPONSE:   return sizeof(Result);
+	}
 }

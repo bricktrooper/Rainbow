@@ -19,8 +19,9 @@
 #define NEWLINE   "\r\n"
 #define COLON     ": "
 
-static char * system_abort_reasons [ABORT_count] = {
-	"NULL POINTER"
+static char * abort_reasons [ABORT_count] = {
+	"RX_OVERRUN",
+	"RX_BUFFER_OVERFLOW"
 };
 
 static void startup_indicator(void)
@@ -70,15 +71,15 @@ void system_abort(Abort abort, char const * caller)
 		// dump abort reason to UART
 		if (abort < ABORT_count)
 		{
-			char * reason = system_abort_reasons[abort];
+			char * reason = abort_reasons[abort];
 
 			if (caller != NULL)
 			{
-				uart_transmit(caller, strlen(caller));
+				uart_transmit(caller, (U8)strlen(caller));
 				uart_transmit(COLON, sizeof(COLON) - 1);
 			}
 
-			uart_transmit(reason, strlen(reason));
+			uart_transmit(reason, (U8)strlen(reason));
 			uart_transmit(NEWLINE, sizeof(NEWLINE) - 1);
 		}
 	}

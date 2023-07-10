@@ -7,6 +7,8 @@
 #define RAINBOW_TRANISTION_DELAY_US   20000
 #define RAINBOW_SOLID_DELAY_US        200000
 
+static U8 brightness = RGB_MAX_BIRGHTNESS;
+
 void rgb_initialize(void)
 {
 	rgb_off();
@@ -39,7 +41,7 @@ void rgb_off(void)
 	rgb_colour(0, 0, 0);
 }
 
-void rgb_rainbow(U8 brightness)
+void rgb_rainbow(void)
 {
 	rgb_red(brightness);
 
@@ -96,4 +98,9 @@ void rgb_rainbow(U8 brightness)
 	}
 
 	_delay(RAINBOW_SOLID_DELAY_US);
+}
+
+void rgb_brightness(U8 value)
+{
+	brightness = value;
 }

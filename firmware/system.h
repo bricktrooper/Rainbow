@@ -16,13 +16,13 @@ typedef enum Abort Abort;
 enum Abort
 {
 	ABORT_RX_OVERRUN,
+	ABORT_RX_BUFFER_OVERFLOW,
 
 	ABORT_count,
 };
 
 void system_initialize(void);
 void system_abort(Abort abort, char const * caller);
-//void system_service(U8 request);
 //void system_reboot(void);
 
 #endif /* SYSTEM_H */
