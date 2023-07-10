@@ -38,11 +38,6 @@ void uart_initialize(void)
 
 void uart_transmit(void const * data, U8 size)
 {
-	if (data == NULL)
-	{
-		system_fatal();
-	}
-
 	char * bytes = (char *)data;
 
 	for (int i = 0; i < size; i++)
@@ -54,11 +49,6 @@ void uart_transmit(void const * data, U8 size)
 
 void uart_receive(void * data, U8 size)
 {
-	if (data == NULL)
-	{
-		system_fatal();
-	}
-
 	char * bytes = (char *)data;
 
 	for (int i = 0; i < size; i++)
@@ -66,7 +56,7 @@ void uart_receive(void * data, U8 size)
 		// detect overrun errors
 		if (RC1STAbits.OERR)
 		{
-			system_fatal();
+			ABORT(ABORT_RX_OVERRUN);
 
 			// clear overrun error
 			//RC1STAbits.CREN = 0;

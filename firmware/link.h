@@ -11,11 +11,11 @@ typedef struct Packet Packet;
 
 enum Opcode
 {
-	OPCODE_PING       = 0x00,
-	OPCODE_RESPONSE   = 0x01,
-	OPCODE_RGB        = 0x02,
-	OPCODE_BRIGHTNESS = 0x03,
-	OPCODE_RAINBOW    = 0x04
+	OPCODE_PING       = 0x0,
+	OPCODE_RESPONSE   = 0x1,
+	OPCODE_RGB        = 0x2,
+	OPCODE_BRIGHTNESS = 0x3,
+	OPCODE_RAINBOW    = 0x4
 } __attribute__((packed));
 
 enum Result
