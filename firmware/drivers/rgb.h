@@ -3,7 +3,7 @@
 
 #include "types.h"
 
-#define RGB_MAX_BIRGHTNESS   255
+#define RGB_MAX_BRIGHTNESS   255
 #define RGB_MIN_BRIGHTNESS   0
 
 void rgb_initialize(void);
