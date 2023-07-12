@@ -29,7 +29,7 @@ void pwm_initialize(void)
 	T2CLKCONbits.CS = 0b0001;       // user Fosc/4
 	T2PR = 0x65;                    // timer period
 	PIR4bits.TMR2IF = 0;            // reset timer
-	T2CONbits.CKPS = 0b100;         // 1:16 prescaler
+	T2CONbits.CKPS = 0b000;         // 1:1 prescaler
 	T2CONbits.ON = 1;               // enable timer
 	while (PIR4bits.TMR2IF == 0);   // wait for first timer interrupt
 
