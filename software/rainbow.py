@@ -3,6 +3,10 @@ import log
 from serial import Serial, STOPBITS_ONE, EIGHTBITS
 from link import Header
 
+
+
+def connect():
+
 try:
 	serial = Serial(
 		port = "/dev/cu.rainbow-kyle-DevB",
