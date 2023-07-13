@@ -15,7 +15,7 @@ static U8 red_brightness = 0;
 static U8 green_brightness = 0;
 static U8 blue_brightness = 0;
 
-static inline PWM_Channel colour_channel(Colour colour)
+static inline PWM_Channel get_channel(Colour colour)
 {
 	switch (colour)
 	{
@@ -25,7 +25,7 @@ static inline PWM_Channel colour_channel(Colour colour)
 	}
 }
 
-static inline PWM_Channel colour_brightness(Colour colour)
+static inline PWM_Channel get_brightness(Colour colour)
 {
 	switch (colour)
 	{
@@ -45,13 +45,13 @@ void rgb_initialize()
 
 void rgb_set(Colour colour, U8 value)
 {
-	PWM_Channel channel = colour_channel(colour);
+	PWM_Channel channel = get_channel(colour);
 	pwm_duty(channel, value);
 }
 
 void rgb_fade_in(Colour colour)
 {
-	U8 brightness = colour_brightness(colour);
+	U8 brightness = get_brightness(colour);
 
 	for (U8 i = 0; i < brightness; i++)
 	{
@@ -62,7 +62,7 @@ void rgb_fade_in(Colour colour)
 
 void rgb_fade_out(Colour colour)
 {
-	U8 brightness = colour_brightness(colour);
+	U8 brightness = get_brightness(colour);
 
 	for (U8 i = brightness; i > 0; i--)
 	{
