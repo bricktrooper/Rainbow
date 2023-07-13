@@ -22,9 +22,10 @@ static Result service(Opcode opcode, void * data)
 		}
 		case OPCODE_BRIGHTNESS:
 		{
-			U8 * brightness = data;
-			rgb_brightness(*brightness);
-			return RESULT_SUCCESS;
+			//U8 * brightness = data;
+			//rgb_brightness(*brightness);
+			//return RESULT_SUCCESS;
+			return RESULT_ERROR_OPCODE;
 		}
 		case OPCODE_RAINBOW:
 		{
@@ -41,6 +42,7 @@ static Result service(Opcode opcode, void * data)
 void main(void)
 {
 	system_initialize();
+	rgb_brightness(GREEN, RGB_MAX_BRIGHTNESS / 4);
 
 	while(1)
 	{
