@@ -15,7 +15,7 @@ typedef struct RGB RGB;
 enum Opcode
 {
 	OPCODE_PING       = 0x00,
-	OPCODE_RGB        = 0x01,
+	OPCODE_COLOUR     = 0x01,
 	OPCODE_BRIGHTNESS = 0x02,
 	OPCODE_RAINBOW    = 0x03,
 

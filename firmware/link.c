@@ -77,7 +77,7 @@ U8 link_data_length(Opcode opcode)
 	switch (opcode)
 	{
 		case OPCODE_PING:       return 0;
-		case OPCODE_RGB:        return sizeof(RGB);
+		case OPCODE_COLOUR:     return sizeof(RGB);
 		case OPCODE_BRIGHTNESS: return sizeof(RGB);
 		case OPCODE_RAINBOW:    return 0;
 		case OPCODE_RESPONSE:   return sizeof(Result);

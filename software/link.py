@@ -8,7 +8,7 @@ from enum import IntEnum
 
 class Opcode(IntEnum):
 	PING       = 0x00
-	RGB        = 0x01
+	COLOUR     = 0x01
 	BRIGHTNESS = 0x02
 	RAINBOW    = 0x03
 	RESPONSE   = 0xFF

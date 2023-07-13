@@ -14,7 +14,7 @@ static Result service(Opcode opcode, void * data)
 		{
 			return RESULT_SUCCESS;
 		}
-		case OPCODE_RGB:
+		case OPCODE_COLOUR:
 		{
 			RGB * colour = data;
 			rgb_colour(colour->red, colour->green, colour->blue);
