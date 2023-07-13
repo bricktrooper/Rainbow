@@ -78,7 +78,7 @@ U8 link_data_length(Opcode opcode)
 	{
 		case OPCODE_PING:       return 0;
 		case OPCODE_RGB:        return sizeof(RGB);
-		case OPCODE_BRIGHTNESS: return sizeof(U8);
+		case OPCODE_BRIGHTNESS: return sizeof(RGB);
 		case OPCODE_RAINBOW:    return 0;
 		case OPCODE_RESPONSE:   return sizeof(Result);
 	}

@@ -39,9 +39,7 @@ static inline PWM_Channel get_brightness(Colour colour)
 void rgb_initialize()
 {
 	rgb_off();
-	rgb_brightness(RED, PWM_MAX);
-	rgb_brightness(GREEN, PWM_MAX);
-	rgb_brightness(BLUE, PWM_MAX);
+	rgb_brightness(PWM_MAX, PWM_MAX, PWM_MAX);
 }
 
 #include "uart.h"
@@ -116,24 +114,9 @@ void rgb_rainbow(void)
 	_delay(RAINBOW_SOLID_DELAY_US);
 }
 
-void rgb_brightness(Colour colour, U8 value)
+void rgb_brightness(U8 red, U8 green, U8 blue)
 {
-	switch (colour)
-	{
-		case RED:
-		{
-			red_brightness = value;
-			break;
-		}
-		case GREEN:
-		{
-			green_brightness = value;
-			break;
-		}
-		case BLUE:
-		{
-			blue_brightness = value;
-			break;
-		}
-	}
+	red_brightness = red;
+	green_brightness = green;
+	blue_brightness = blue;
 }
