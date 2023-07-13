@@ -13,7 +13,7 @@
 #include "pwm.h"
 #include "rgb.h"
 
-#define LED_DELAY_US   200000
+#define LED_DELAY_US   1000000
 #define LED_BLINKS     3
 
 #define NEWLINE   "\r\n"

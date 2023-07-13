@@ -23,9 +23,9 @@ void uart_initialize(void)
 	BAUD1CONbits.WUE = 0;     // disable wake-up
 	BAUD1CONbits.ABDEN = 0;   // disable auto-baud detect
 
-	// 117600 bps @ 8 MHz (~115200 bps)
+	// 115900 bps @ 32 MHz (~115200 bps)
 	SP1BRGH = 0;
-	SP1BRGL = 16;
+	SP1BRGL = 68;
 
 	RX1DTPPS = PPSI_RC5;          // use RC5 for RX1
 	TRISCbits.TRISC5 = INPUT;     // configure RC5 as input

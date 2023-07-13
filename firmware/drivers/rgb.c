@@ -9,8 +9,8 @@
 #define PWM_CHANNEL_GREEN   PWM4
 #define PWM_CHANNEL_BLUE    PWM5
 
-#define RAMP_DELAY_US            2000
-#define RAINBOW_SOLID_DELAY_US   50000
+#define RAMP_DELAY_US            20000
+#define RAINBOW_SOLID_DELAY_US   500000
 
 static U8 red_brightness = 0;
 static U8 green_brightness = 0;

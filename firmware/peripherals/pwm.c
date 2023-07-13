@@ -26,7 +26,7 @@ void pwm_initialize(void)
 	PWM5CONbits.PWM5POL = 0;
 
 	// set up timer 2
-	timer2_init(T2CKPS_1, 0x65);    // set prescaler and period
+	timer2_init(T2CKPS_1, 0x3F);    // set prescaler and period
 	timer2_enable(true);            // enable timer
 	while (PIR4bits.TMR2IF == 0);   // wait for first timer interrupt
 
