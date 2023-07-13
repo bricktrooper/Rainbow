@@ -43,7 +43,7 @@ void pwm_initialize(void)
 
 void pwm_duty(PWM_Channel channel, U8 value)
 {
-	U32 duty = ((U32)value * 4 * (T2PR + 1)) / 255;
+	U32 duty = ((U32)value * 4 * (T2PR + 1)) / PWM_MAX;
 	U8 high = (U8)(duty >> 2);
 	U8 low = (U8)(duty << 6);
 

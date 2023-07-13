@@ -39,39 +39,44 @@ static inline PWM_Channel get_brightness(Colour colour)
 void rgb_initialize()
 {
 	rgb_off();
-	rgb_brightness(RED, RGB_MAX_BRIGHTNESS);
-	rgb_brightness(GREEN, RGB_MAX_BRIGHTNESS);
-	rgb_brightness(BLUE, RGB_MAX_BRIGHTNESS);
+	rgb_brightness(RED, PWM_MAX);
+	rgb_brightness(GREEN, PWM_MAX);
+	rgb_brightness(BLUE, PWM_MAX);
 }
+
+#include "uart.h"
+#include <stdio.h>
 
 void rgb_set(Colour colour, U8 value)
 {
+	U8 brightness = get_brightness(colour);
+	U8 duty = (U8)(((U16)value * brightness) / PWM_MAX);   // scale PWM value
 	PWM_Channel channel = get_channel(colour);
-	pwm_duty(channel, value);
+	pwm_duty(channel, duty);
 }
 
 void rgb_fade_in(Colour colour)
 {
-	U8 brightness = get_brightness(colour);
-	U8 resolution = RGB_MAX_BRIGHTNESS;
+	//U8 brightness = get_brightness(colour);
+	//U8 resolution = PWM_MAX;
 
-	for (U8 i = 0; i < resolution; i++)
+	for (U8 i = 0; i < PWM_MAX; i++)
 	{
-		U8 value = (i * brightness) / resolution;   // scale PWM value
-		rgb_set(colour, value);
+		//U8 value = (i * brightness) / resolution;   // scale PWM value
+		rgb_set(colour, i);
 		_delay(RAMP_DELAY_US);
 	}
 }
 
 void rgb_fade_out(Colour colour)
 {
-	U8 brightness = get_brightness(colour);
-	U8 resolution = RGB_MAX_BRIGHTNESS;
+	//U8 brightness = get_brightness(colour);
+	//U8 resolution = PWM_MAX;
 
-	for (U8 i = RGB_MAX_BRIGHTNESS; i > 0; i--)
+	for (U8 i = PWM_MAX; i > 0; i--)
 	{
-		U8 value = (i * brightness) / resolution;   // scale PWM value
-		rgb_set(colour, value);
+		//U8 value = (i * brightness) / resolution;   // scale PWM value
+		rgb_set(colour, i);
 		_delay(RAMP_DELAY_US);
 	}
 }
@@ -90,7 +95,7 @@ void rgb_off(void)
 
 void rgb_rainbow(void)
 {
-	rgb_set(RED, RGB_MAX_BRIGHTNESS);
+	rgb_set(RED, 255);
 
 	rgb_fade_in(GREEN);
 	_delay(RAINBOW_SOLID_DELAY_US);

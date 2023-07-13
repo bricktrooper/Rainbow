@@ -3,9 +3,6 @@
 
 #include "types.h"
 
-#define RGB_MAX_BRIGHTNESS   255
-#define RGB_MIN_BRIGHTNESS   0
-
 typedef enum Colour Colour;
 
 enum Colour
