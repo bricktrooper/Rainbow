@@ -4,6 +4,7 @@
 
 #include "system.h"
 #include "pps.h"
+#include "timer2.h"
 
 void pwm_initialize(void)
 {
@@ -24,13 +25,9 @@ void pwm_initialize(void)
 	PWM4CONbits.PWM4POL = 0;
 	PWM5CONbits.PWM5POL = 0;
 
-	// TIMER 2 //
-
-	T2CLKCONbits.CS = 0b0001;       // user Fosc/4
-	T2PR = 0x65;                    // timer period
-	PIR4bits.TMR2IF = 0;            // reset timer
-	T2CONbits.CKPS = 0b000;         // 1:1 prescaler
-	T2CONbits.ON = 1;               // enable timer
+	// set up timer 2
+	timer2_init(T2CKPS_1, 0x65);    // set prescaler and period
+	timer2_enable(true);            // enable timer
 	while (PIR4bits.TMR2IF == 0);   // wait for first timer interrupt
 
 	// enable all PWM channels
