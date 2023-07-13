@@ -8,8 +8,8 @@
 #define PWM_CHANNEL_GREEN   PWM4
 #define PWM_CHANNEL_BLUE    PWM5
 
-#define RAINBOW_TRANISTION_DELAY_US   20000
-#define RAINBOW_SOLID_DELAY_US        200000
+#define RAMP_DELAY_US            2000
+#define RAINBOW_SOLID_DELAY_US   1000000
 
 static U8 red_brightness = RGB_MAX_BRIGHTNESS;
 static U8 green_brightness = RGB_MAX_BRIGHTNESS;
@@ -36,6 +36,24 @@ void rgb_set(Colour colour, U8 value)
 	pwm_duty(channel, value);
 }
 
+void rgb_fade_in(Colour colour)
+{
+	for (U8 i = 0; i < RGB_MAX_BRIGHTNESS; i++)
+	{
+		rgb_set(colour, i);
+		_delay(RAMP_DELAY_US);
+	}
+}
+
+void rgb_fade_out(Colour colour)
+{
+	for (U8 i = RGB_MAX_BRIGHTNESS; i > 0; i--)
+	{
+		rgb_set(colour, i);
+		_delay(RAMP_DELAY_US);
+	}
+}
+
 void rgb_colour(U8 red, U8 green, U8 blue)
 {
 	rgb_set(RED, red);
@@ -50,60 +68,24 @@ void rgb_off(void)
 
 void rgb_rainbow(void)
 {
-	rgb_set(RED, red_brightness);
+	rgb_set(RED, RGB_MAX_BRIGHTNESS);
 
-	// fade in green
-	for (U8 i = 0; i < green_brightness; i++)
-	{
-		rgb_set(GREEN, i);
-		_delay(RAINBOW_TRANISTION_DELAY_US);
-	}
-
+	rgb_fade_in(GREEN);
 	_delay(RAINBOW_SOLID_DELAY_US);
 
-	// fade out red
-	for (U8 i = red_brightness; i > 0; i--)
-	{
-		rgb_set(RED, i);
-		_delay(RAINBOW_TRANISTION_DELAY_US);
-	}
-
+	rgb_fade_out(RED);
 	_delay(RAINBOW_SOLID_DELAY_US);
 
-	// fade in blue
-	for (U8 i = 0; i < blue_brightness; i++)
-	{
-		rgb_set(BLUE, i);
-		_delay(RAINBOW_TRANISTION_DELAY_US);
-	}
-
+	rgb_fade_in(BLUE);
 	_delay(RAINBOW_SOLID_DELAY_US);
 
-	// fade out green
-	for (U8 i = green_brightness; i > 0; i--)
-	{
-		rgb_set(GREEN, i);
-		_delay(RAINBOW_TRANISTION_DELAY_US);
-	}
-
+	rgb_fade_out(GREEN);
 	_delay(RAINBOW_SOLID_DELAY_US);
 
-	// fade in red
-	for (U8 i = 0; i < red_brightness; i++)
-	{
-		rgb_set(RED, i);
-		_delay(RAINBOW_TRANISTION_DELAY_US);
-	}
-
+	rgb_fade_in(RED);
 	_delay(RAINBOW_SOLID_DELAY_US);
 
-	// fade out blue
-	for (U8 i = blue_brightness; i > 0; i--)
-	{
-		rgb_set(BLUE, i);
-		_delay(RAINBOW_TRANISTION_DELAY_US);
-	}
-
+	rgb_fade_out(BLUE);
 	_delay(RAINBOW_SOLID_DELAY_US);
 }
 
