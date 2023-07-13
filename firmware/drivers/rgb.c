@@ -55,12 +55,8 @@ void rgb_set(Colour colour, U8 value)
 
 void rgb_fade_in(Colour colour)
 {
-	//U8 brightness = get_brightness(colour);
-	//U8 resolution = PWM_MAX;
-
 	for (U8 i = 0; i < PWM_MAX; i++)
 	{
-		//U8 value = (i * brightness) / resolution;   // scale PWM value
 		rgb_set(colour, i);
 		_delay(RAMP_DELAY_US);
 	}
@@ -68,12 +64,8 @@ void rgb_fade_in(Colour colour)
 
 void rgb_fade_out(Colour colour)
 {
-	//U8 brightness = get_brightness(colour);
-	//U8 resolution = PWM_MAX;
-
 	for (U8 i = PWM_MAX; i > 0; i--)
 	{
-		//U8 value = (i * brightness) / resolution;   // scale PWM value
 		rgb_set(colour, i);
 		_delay(RAMP_DELAY_US);
 	}
