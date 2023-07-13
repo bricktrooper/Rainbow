@@ -41,6 +41,7 @@ static Result service(Opcode opcode, void * data)
 void main(void)
 {
 	system_initialize();
+
 	while(1)
 	{
 		rgb_rainbow();
