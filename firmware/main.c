@@ -42,7 +42,6 @@ static Result service(Opcode opcode, void * data)
 void main(void)
 {
 	system_initialize();
-	rgb_brightness(GREEN, RGB_MAX_BRIGHTNESS / 4);
 
 	while(1)
 	{

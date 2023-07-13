@@ -1,6 +1,7 @@
 #include "rgb.h"
 
 #include <xc.h>
+#include <stdbool.h>
 
 #include "pwm.h"
 
@@ -9,7 +10,7 @@
 #define PWM_CHANNEL_BLUE    PWM5
 
 #define RAMP_DELAY_US            2000
-#define RAINBOW_SOLID_DELAY_US   1000000
+#define RAINBOW_SOLID_DELAY_US   50000
 
 static U8 red_brightness = 0;
 static U8 green_brightness = 0;
@@ -52,10 +53,12 @@ void rgb_set(Colour colour, U8 value)
 void rgb_fade_in(Colour colour)
 {
 	U8 brightness = get_brightness(colour);
+	U8 resolution = RGB_MAX_BRIGHTNESS;
 
-	for (U8 i = 0; i < brightness; i++)
+	for (U8 i = 0; i < resolution; i++)
 	{
-		rgb_set(colour, i);
+		U8 value = (i * brightness) / resolution;   // scale PWM value
+		rgb_set(colour, value);
 		_delay(RAMP_DELAY_US);
 	}
 }
@@ -63,10 +66,12 @@ void rgb_fade_in(Colour colour)
 void rgb_fade_out(Colour colour)
 {
 	U8 brightness = get_brightness(colour);
+	U8 resolution = RGB_MAX_BRIGHTNESS;
 
-	for (U8 i = brightness; i > 0; i--)
+	for (U8 i = RGB_MAX_BRIGHTNESS; i > 0; i--)
 	{
-		rgb_set(colour, i);
+		U8 value = (i * brightness) / resolution;   // scale PWM value
+		rgb_set(colour, value);
 		_delay(RAMP_DELAY_US);
 	}
 }
