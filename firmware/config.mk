@@ -13,6 +13,7 @@ LIBS +=
 # NOTE: include paths are searched in this order
 DIR += peripherals
 DIR += drivers
+DIR += utilities
 
 # artifacts folder
 ART = artifacts
