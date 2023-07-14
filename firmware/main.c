@@ -41,26 +41,26 @@ static Result service(Opcode opcode, void * data)
 void main(void)
 {
 	system_initialize();
-	rgb_brightness(255 / 4, 64 / 2, 255 / 4);
-
-	while(1)
-	{
-		rgb_rainbow();
-	}
+	uart_asynchronous(true, false);
 
 	while (1)
 	{
-		Header header;
-		U8 data [4];
-		Result result = link_receive(&header, data, sizeof(data));
-		led_on();
+		char string [3];
+		uart_read(string, sizeof(string));
+		uart_transmit(string, sizeof(string));
+		rgb_rainbow();
+		//uart_echo();
+		//Header header;
+		//U8 data [4];
+		//Result result = link_receive(&header, data, sizeof(data));
+		//led_on();
 
-		if (result == RESULT_SUCCESS)
-		{
-			result = service(header.opcode, data);
-		}
+		//if (result == RESULT_SUCCESS)
+		//{
+		//	result = service(header.opcode, data);
+		//}
 
-		link_transmit(result);
-		led_off();
+		//link_transmit(result);
+		//led_off();
 	}
 }

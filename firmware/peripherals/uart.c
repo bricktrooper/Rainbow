@@ -5,6 +5,13 @@
 
 #include "system.h"
 #include "pps.h"
+#include "queue.h"
+
+#define RX_BUFFER_SIZE   16
+
+static Queue rx_queue;
+
+static U8 rx_buffer [RX_BUFFER_SIZE];
 
 void uart_initialize(void)
 {
@@ -34,6 +41,18 @@ void uart_initialize(void)
 	RC4PPS = PPSO_TX1;            // use RC4 for TX1
 	TRISCbits.TRISC4 = OUTPUT;    // configure RC4 as output
 	ANSELCbits.ANSC4 = DIGITAL;   // configure RC4 as digital
+
+
+
+	PIE3bits.RC1IE = 1;
+
+	queue_initialize(&rx_queue, rx_buffer, RX_BUFFER_SIZE);
+}
+
+void uart_asynchronous(bool rx, bool tx)
+{
+	PIE3bits.RC1IE = rx;
+	PIE3bits.TX1IE = tx;
 }
 
 void uart_transmit(void const * data, U8 size)
@@ -68,6 +87,26 @@ void uart_receive(void * data, U8 size)
 	}
 }
 
+void uart_read(void * data, U8 size)
+{
+	char * bytes = (char *)data;
+	U8 i = 0;
+
+	while (i < size)
+	{
+		// try to pop next byte from queue
+		U8 byte;
+		bool result = queue_pop(&rx_queue, &byte);
+
+		// save byte if pop was successful
+		if (result)
+		{
+			bytes[i] = byte;
+			i++;
+		}
+	}
+}
+
 void putch(char byte)
 {
 	uart_transmit(&byte, 1);
@@ -78,4 +117,20 @@ void uart_echo(void)
 	char byte;
 	uart_receive(&byte, 1);
 	uart_transmit(&byte, 1);
+}
+
+#include "led.h"
+void __interrupt() isr()
+{
+	if (PIR3bits.RC1IF)
+	{
+		U8 byte = RC1REG;                            // read byte and clear RC1IF flag
+		bool result = queue_push(&rx_queue, byte);   // push byte to RX queue
+		putch(byte);
+
+		if (!result)
+		{
+			ABORT(ABORT_RX_BUFFER_OVERFLOW);
+		}
+	}
 }
