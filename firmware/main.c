@@ -42,12 +42,14 @@ void main(void)
 {
 	system_initialize();
 	uart_asynchronous(true, false);
+	rgb_brightness(64, 64, 64);
 
 	while (1)
 	{
 		char string [3];
-		uart_read(string, sizeof(string));
-		uart_transmit(string, sizeof(string));
+		uart_write("hello", 5);
+		//uart_read(string, sizeof(string));
+		//uart_transmit(string, sizeof(string));
 		rgb_rainbow();
 		//uart_echo();
 		//Header header;

@@ -21,7 +21,8 @@
 
 static char * abort_reasons [ABORT_count] = {
 	"RX_OVERRUN",
-	"RX_BUFFER_OVERFLOW"
+	"RX_BUFFER_OVERFLOW",
+	"TX_BUFFER_OVERFLOW",
 };
 
 static void startup_indicator(void)

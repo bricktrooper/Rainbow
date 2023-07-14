@@ -8,10 +8,13 @@
 #include "queue.h"
 
 #define RX_BUFFER_SIZE   16
+#define TX_BUFFER_SIZE   16
 
 static Queue rx_queue;
+static Queue tx_queue;
 
 static U8 rx_buffer [RX_BUFFER_SIZE];
+static U8 tx_buffer [TX_BUFFER_SIZE];
 
 void uart_initialize(void)
 {
@@ -42,17 +45,21 @@ void uart_initialize(void)
 	TRISCbits.TRISC4 = OUTPUT;    // configure RC4 as output
 	ANSELCbits.ANSC4 = DIGITAL;   // configure RC4 as digital
 
-
-
-	PIE3bits.RC1IE = 1;
-
-	queue_initialize(&rx_queue, rx_buffer, RX_BUFFER_SIZE);
+	uart_asynchronous(false, false);                          // disable async mode for RX and TX
+	queue_initialize(&rx_queue, rx_buffer, RX_BUFFER_SIZE);   // initialize RX queue (used for async mode)
+	queue_initialize(&tx_queue, tx_buffer, TX_BUFFER_SIZE);   // initialize TX queue (used for async mode)
 }
 
 void uart_asynchronous(bool rx, bool tx)
 {
 	PIE3bits.RC1IE = rx;
 	PIE3bits.TX1IE = tx;
+}
+
+static void clear_rx_overrun(void)
+{
+	RC1STAbits.CREN = 0;
+	RC1STAbits.CREN = 1;
 }
 
 void uart_transmit(void const * data, U8 size)
@@ -76,15 +83,36 @@ void uart_receive(void * data, U8 size)
 		if (RC1STAbits.OERR)
 		{
 			ABORT(ABORT_RX_OVERRUN);
-
-			// clear overrun error
-			//RC1STAbits.CREN = 0;
-			//RC1STAbits.CREN = 1;
+			//clear_rx_overrun();
 		}
 
 		while (!PIR3bits.RC1IF);   // wait for a byte to arrive in the RX register
 		bytes[i] = RC1REG;         // read byte from RX register to clear RC1IF
 	}
+}
+
+void uart_write(void * data, U8 size)
+{
+	char * bytes = (char *)data;
+	U8 i = 0;
+
+	while (i < size)
+	{
+		// try to push next byte to queue
+		bool result = queue_push(&tx_queue, bytes[i]);
+
+		// move to next byte if push was successful
+		if (result)
+		{
+			i++;
+		}
+		else
+		{
+			ABORT(ABORT_TX_BUFFER_OVERFLOW);
+		}
+	}
+
+	PIE3bits.TX1IE = 1;   // enable TX interrupt since there is new data to send
 }
 
 void uart_read(void * data, U8 size)
@@ -126,11 +154,22 @@ void __interrupt() isr()
 	{
 		U8 byte = RC1REG;                            // read byte and clear RC1IF flag
 		bool result = queue_push(&rx_queue, byte);   // push byte to RX queue
-		putch(byte);
 
 		if (!result)
 		{
 			ABORT(ABORT_RX_BUFFER_OVERFLOW);
 		}
+	}
+	if (PIR3bits.TX1IF)
+	{
+		U8 byte;
+		bool result = queue_pop(&tx_queue, &byte);   // pop byte from TX queue
+
+		if (result)
+		{
+			TX1REG = byte;   // load the byte for transmission
+		}
+
+		PIE3bits.TX1IE = result;  // disable TX interrupt if there is no more data to send
 	}
 }
