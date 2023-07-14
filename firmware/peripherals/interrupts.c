@@ -4,8 +4,8 @@
 
 void interrupts_initialize(void)
 {
-	interrupts_global(false);       // mask all interrupts
 	interrupts_peripheral(true);    // enable peripherial interrupts
+	interrupts_global(true);        // unmask all interrupts
 }
 
 void interrupts_global(bool enable)
