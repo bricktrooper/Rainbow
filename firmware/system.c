@@ -28,10 +28,7 @@ static void startup_indicator(void)
 {
 	for (int i = 0; i < LED_BLINKS; i++)
 	{
-		led_on();
-		_delay(LED_DELAY_US);
-		led_off();
-		_delay(LED_DELAY_US);
+		led_blink();
 	}
 }
 

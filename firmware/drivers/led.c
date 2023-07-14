@@ -7,7 +7,7 @@
 #define LED        RA5
 #define TRIS_LED   TRISA5
 
-#define BLINK_DELAY_US   500000
+#define BLINK_DELAY_US   1000000
 
 void led_initialize(void)
 {
