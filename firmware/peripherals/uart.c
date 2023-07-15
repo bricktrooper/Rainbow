@@ -16,6 +16,9 @@ static Queue tx_queue;
 static U8 rx_buffer [RX_BUFFER_SIZE];
 static U8 tx_buffer [TX_BUFFER_SIZE];
 
+static bool non_blocking_rx = false;
+static bool non_blocking_tx = false;
+
 void uart_initialize(void)
 {
 	TX1STAbits.TX9 = 0;     // 8 b transmission
@@ -45,15 +48,18 @@ void uart_initialize(void)
 	TRISCbits.TRISC4 = OUTPUT;    // configure RC4 as output
 	ANSELCbits.ANSC4 = DIGITAL;   // configure RC4 as digital
 
-	uart_asynchronous(false, false);                          // disable async mode for RX and TX
-	queue_initialize(&rx_queue, rx_buffer, RX_BUFFER_SIZE);   // initialize RX queue (used for async mode)
-	queue_initialize(&tx_queue, tx_buffer, TX_BUFFER_SIZE);   // initialize TX queue (used for async mode)
+	uart_non_blocking(false, false);                          // disable non-blocking mode for RX and TX
+	queue_initialize(&rx_queue, rx_buffer, RX_BUFFER_SIZE);   // initialize RX queue (used for non-blocking mode)
+	queue_initialize(&tx_queue, tx_buffer, TX_BUFFER_SIZE);   // initialize TX queue (used for non-blocking mode)
 }
 
-void uart_asynchronous(bool rx, bool tx)
+void uart_non_blocking(bool rx, bool tx)
 {
 	PIE3bits.RC1IE = rx;
 	PIE3bits.TX1IE = tx;
+
+	non_blocking_rx = rx;
+	non_blocking_tx = tx;
 }
 
 static void clear_rx_overrun(void)
@@ -135,16 +141,42 @@ void uart_read(void * data, U8 size)
 	}
 }
 
+U8 uart_peek(void)
+{
+	return rx_queue.length;
+}
+
 void putch(char byte)
 {
-	uart_transmit(&byte, 1);
+	if (non_blocking_tx)
+	{
+		uart_write(&byte, 1);
+	}
+	else
+	{
+		uart_transmit(&byte, 1);
+	}
+}
+
+char getch(void)
+{
+	char byte;
+
+	if (non_blocking_rx)
+	{
+		uart_read(&byte, 1);
+	}
+	else
+	{
+		uart_receive(&byte, 1);
+	}
+
+	return byte;
 }
 
 void uart_echo(void)
 {
-	char byte;
-	uart_receive(&byte, 1);
-	uart_transmit(&byte, 1);
+	putch(getch());
 }
 
 #include "led.h"
