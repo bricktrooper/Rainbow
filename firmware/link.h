@@ -58,8 +58,6 @@ struct RGB
 
 Result link_receive(Header * header, void * data, U8 length);
 void link_transmit(Result result);
-U8 link_checksum(Header * header, void * data);
-U8 link_data_length(Opcode opcode);
 Result link_verify(Header * header, void * data);
 bool link_state_machine(Header * header, void * data, U8 length);
 void link_state_machine_reset(void);

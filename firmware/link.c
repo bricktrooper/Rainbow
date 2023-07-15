@@ -8,6 +8,37 @@
 
 static State state = STATE_MAGIC;
 
+static U8 get_data_length(Opcode opcode)
+{
+	switch (opcode)
+	{
+		case OPCODE_PING:       return 0;
+		case OPCODE_COLOUR:     return sizeof(RGB);
+		case OPCODE_BRIGHTNESS: return sizeof(RGB);
+		case OPCODE_RAINBOW:    return 0;
+		case OPCODE_RESPONSE:   return sizeof(Result);
+	}
+}
+
+static U8 calculate_checksum(Header * header, void * data)
+{
+	U8 checksum = header->checksum;   // cancel out XOR of checksum (A (+) A = 0)
+
+	for (U8 i = 0; i < sizeof(Header); i++)
+	{
+		U8 * bytes = (U8 *)header;
+		checksum ^= bytes[i];
+	}
+
+	for (U8 i = 0; i < header->length; i++)
+	{
+		U8 * bytes = (U8 *)data;
+		checksum ^= bytes[i];
+	}
+
+	return checksum;
+}
+
 void link_state_machine_reset(void)
 {
 	state = STATE_MAGIC;
@@ -21,17 +52,16 @@ bool link_state_machine(Header * header, void * data, U8 length)
 	{
 		case STATE_MAGIC:
 		{
-			U16 magic;
-			U8 const size = sizeof(magic);
+			U8 const size = sizeof(header->magic);
 
 			if (uart_peek() < size)
 			{
 				break;
 			}
 
-			uart_read(&magic, size);
+			uart_read(&header->magic, size);
 
-			if (magic != MAGIC)
+			if (header->magic != MAGIC)
 			{
 				break;
 			}
@@ -105,13 +135,13 @@ Result link_receive(Header * header, void * data, U8 length)
 	uart_receive(data, header->length);
 
 	// verify checksum
-	if (link_checksum(header, data) != header->checksum)
+	if (calculate_checksum(header, data) != header->checksum)
 	{
 		return RESULT_ERROR_CHECKSUM;
 	}
 
 	// verify data length
-	if (link_data_length(header->opcode) != header->length)
+	if (get_data_length(header->opcode) != header->length)
 	{
 		return RESULT_ERROR_DATA_LENGTH;
 	}
@@ -125,58 +155,27 @@ void link_transmit(Result result)
 	Header header;
 	header.magic = MAGIC;
 	header.opcode = OPCODE_RESPONSE;
-	header.length = link_data_length(header.opcode);
-	header.checksum = link_checksum(&header, &result);
+	header.length = get_data_length(header.opcode);
+	header.checksum = calculate_checksum(&header, &result);
 
 	uart_transmit(&header, sizeof(Header));
 	uart_transmit(&result, header.length);
 }
 
-U8 link_checksum(Header * header, void * data)
-{
-	U8 checksum = header->checksum;   // cancel out XOR of checksum
-
-	for (U8 i = 0; i < sizeof(Header); i++)
-	{
-		U8 * bytes = (U8 *)header;
-		checksum ^= bytes[i];
-	}
-
-	for (U8 i = 0; i < header->length; i++)
-	{
-		U8 * bytes = (U8 *)data;
-		checksum ^= bytes[i];
-	}
-
-	return checksum;
-}
-
 Result link_verify(Header * header, void * data)
 {
 	// verify checksum
-	if (link_checksum(header, data) != header->checksum)
+	if (calculate_checksum(header, data) != header->checksum)
 	{
 		return RESULT_ERROR_CHECKSUM;
 	}
 
 	// verify data length
-	if (link_data_length(header->opcode) != header->length)
+	if (get_data_length(header->opcode) != header->length)
 	{
 		return RESULT_ERROR_DATA_LENGTH;
 	}
 
 	// packet is valid
 	return RESULT_SUCCESS;
-}
-
-U8 link_data_length(Opcode opcode)
-{
-	switch (opcode)
-	{
-		case OPCODE_PING:       return 0;
-		case OPCODE_COLOUR:     return sizeof(RGB);
-		case OPCODE_BRIGHTNESS: return sizeof(RGB);
-		case OPCODE_RAINBOW:    return 0;
-		case OPCODE_RESPONSE:   return sizeof(Result);
-	}
 }
