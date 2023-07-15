@@ -1,16 +1,28 @@
 #ifndef LINK_H
 #define LINK_H
 
+#include <stdbool.h>
+
 #include "types.h"
 
 #define MAX_DATA_LENGTH   256
 
 typedef enum Opcode Opcode;
 typedef enum Result Result;
+typedef enum State State;
 
 typedef struct Header Header;
 typedef struct Packet Packet;
 typedef struct RGB RGB;
+
+
+enum State
+{
+	STATE_MAGIC,    // waiting for magic number
+	STATE_HEADER,   // waiting for rest of header
+	STATE_DATA,     // waiting for data
+	STATE_READY     // entire packet received and valid
+};
 
 enum Opcode
 {
@@ -31,8 +43,8 @@ enum Result
 
 struct Header
 {
-	U16 magic;
-	U8 opcode;
+	U16 magic;   // must be the first field
+	U8 opcode;   // opcode must always be the first field after magic
 	U8 length;   // MAX_DATA_LENGTH == 256
 	U8 checksum;
 } __attribute__((packed));
@@ -48,5 +60,8 @@ Result link_receive(Header * header, void * data, U8 length);
 void link_transmit(Result result);
 U8 link_checksum(Header * header, void * data);
 U8 link_data_length(Opcode opcode);
+Result link_verify(Header * header, void * data);
+bool link_state_machine(Header * header, void * data, U8 length);
+void link_state_machine_reset(void);
 
 #endif /* LINK_H */

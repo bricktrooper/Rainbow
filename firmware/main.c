@@ -38,22 +38,35 @@ static Result service(Opcode opcode, void * data)
 	}
 }
 
+#include <stdio.h>
 void main(void)
 {
 	system_initialize();
-	uart_asynchronous(true, false);
-	rgb_brightness(64, 64, 64);
+	uart_non_blocking(true, true);
+	rgb_brightness(32, 32, 32);
 
 	while (1)
 	{
-		char string [3];
-		uart_write("hello", 5);
-		//uart_read(string, sizeof(string));
-		//uart_transmit(string, sizeof(string));
-		rgb_rainbow();
-		//uart_echo();
-		//Header header;
-		//U8 data [4];
+		//rgb_rainbow();
+
+		Header header;
+		U8 data [4];
+
+		bool ready = link_state_machine(&header, data, sizeof(data));
+
+		if (ready)
+		{
+			link_state_machine_reset();
+			Result result = link_verify(&header, data);
+
+			if (result == RESULT_SUCCESS)
+			{
+				result = service(header.opcode, data);
+			}
+
+			link_transmit(result);
+		}
+
 		//Result result = link_receive(&header, data, sizeof(data));
 		//led_on();
 

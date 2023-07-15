@@ -2,8 +2,87 @@
 
 #include "uart.h"
 #include "system.h"
+#include "led.h"
 
 #define MAGIC   0xCE23
+
+static State state = STATE_MAGIC;
+
+void link_state_machine_reset(void)
+{
+	state = STATE_MAGIC;
+}
+
+bool link_state_machine(Header * header, void * data, U8 length)
+{
+	bool ready = false;
+
+	switch (state)
+	{
+		case STATE_MAGIC:
+		{
+			U16 magic;
+			U8 const size = sizeof(magic);
+
+			if (uart_peek() < size)
+			{
+				break;
+			}
+
+			uart_read(&magic, size);
+
+			if (magic != MAGIC)
+			{
+				break;
+			}
+
+			led_on();               // visual indicator that a packet was discovered
+			state = STATE_HEADER;   // fall through
+		}
+		case STATE_HEADER:
+		{
+			U8 const size = sizeof(Header) - sizeof(header->magic);
+
+			if (uart_peek() < size)
+			{
+				break;
+			}
+
+			uart_read(&header->opcode, size);
+
+			if (header->length > length)
+			{
+				ABORT(ABORT_DATA_OVERFLOW);
+			}
+
+			state = STATE_DATA;   // fall through
+		}
+		case STATE_DATA:
+		{
+			if (uart_peek() < header->length)
+			{
+				break;
+			}
+
+			uart_read(data, header->length);
+			state = STATE_READY;   // fall through
+		}
+		case STATE_READY:
+		{
+			/*
+			There is nothing to do here since the entire packet is received.
+			The packet should be verified by the caller.
+			The caller should reset the state machine to receive another packet.
+			*/
+
+			led_off();
+			ready = true;
+			break;
+		}
+	}
+
+	return ready;
+}
 
 Result link_receive(Header * header, void * data, U8 length)
 {
@@ -20,7 +99,7 @@ Result link_receive(Header * header, void * data, U8 length)
 	// receive data
 	if (length < header->length)
 	{
-		ABORT(ABORT_RX_BUFFER_OVERFLOW);
+		ABORT(ABORT_DATA_OVERFLOW);
 	}
 
 	uart_receive(data, header->length);
@@ -70,6 +149,24 @@ U8 link_checksum(Header * header, void * data)
 	}
 
 	return checksum;
+}
+
+Result link_verify(Header * header, void * data)
+{
+	// verify checksum
+	if (link_checksum(header, data) != header->checksum)
+	{
+		return RESULT_ERROR_CHECKSUM;
+	}
+
+	// verify data length
+	if (link_data_length(header->opcode) != header->length)
+	{
+		return RESULT_ERROR_DATA_LENGTH;
+	}
+
+	// packet is valid
+	return RESULT_SUCCESS;
 }
 
 U8 link_data_length(Opcode opcode)

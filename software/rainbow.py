@@ -3,9 +3,8 @@ import log
 from serial import Serial, STOPBITS_ONE, EIGHTBITS
 from link import Header
 
-
-
 def connect():
+	pass
 
 try:
 	serial = Serial(
@@ -32,6 +31,6 @@ for i in range(100):
 	header.unpack(response)
 	print(str(header), end = "")
 	data = serial.read(header.length)
-	print(data)
+	print(int(data[0]))
 
 serial.close()
