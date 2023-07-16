@@ -6,6 +6,16 @@
 
 #define MAGIC   0xCE23
 
+typedef enum State State;
+
+enum State
+{
+	STATE_MAGIC,    // waiting for magic number
+	STATE_HEADER,   // waiting for rest of header
+	STATE_DATA,     // waiting for data
+	STATE_READY     // entire packet received and valid
+};
+
 static State state = STATE_MAGIC;
 
 static U8 get_data_length(Opcode opcode)

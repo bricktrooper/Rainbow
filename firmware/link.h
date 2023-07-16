@@ -9,20 +9,10 @@
 
 typedef enum Opcode Opcode;
 typedef enum Result Result;
-typedef enum State State;
 
 typedef struct Header Header;
 typedef struct Packet Packet;
 typedef struct RGB RGB;
-
-
-enum State
-{
-	STATE_MAGIC,    // waiting for magic number
-	STATE_HEADER,   // waiting for rest of header
-	STATE_DATA,     // waiting for data
-	STATE_READY     // entire packet received and valid
-};
 
 enum Opcode
 {
