@@ -28,7 +28,7 @@ static Result service(Opcode opcode, void * data)
 		}
 		case OPCODE_RAINBOW:
 		{
-			rgb_rainbow();
+			//rgb_rainbow();
 			return RESULT_SUCCESS;
 		}
 		default:
@@ -39,15 +39,19 @@ static Result service(Opcode opcode, void * data)
 }
 
 #include <stdio.h>
+#include "timer0.h"
 void main(void)
 {
 	system_initialize();
 	uart_non_blocking(true, true);
-	rgb_brightness(32, 32, 32);
+	rgb_brightness(255, 64, 255);
+	timer0_initialize(T0CKPS_8192, 255);
+	timer0_enable(true);
 
 	while (1)
 	{
-		//rgb_rainbow();
+		//rgb_rainbow_update();
+		continue;
 
 		Header header;
 		U8 data [4];
@@ -66,16 +70,5 @@ void main(void)
 
 			link_transmit(result);
 		}
-
-		//Result result = link_receive(&header, data, sizeof(data));
-		//led_on();
-
-		//if (result == RESULT_SUCCESS)
-		//{
-		//	result = service(header.opcode, data);
-		//}
-
-		//link_transmit(result);
-		//led_off();
 	}
 }

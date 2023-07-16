@@ -25,7 +25,7 @@ checksum = 0xCE ^ 0x23 ^ 0x00 ^ 0x00
 print(hex(checksum))
 packet.append(checksum)
 
-for i in range(1):
+for i in range(10):
 	serial.write(packet)
 	response = serial.read(5)
 	print(str(response))

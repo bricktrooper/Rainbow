@@ -4,13 +4,14 @@
 #include <stdbool.h>
 
 #include "pwm.h"
+#include "timer0.h"
 
 #define PWM_CHANNEL_RED     PWM3
 #define PWM_CHANNEL_GREEN   PWM4
 #define PWM_CHANNEL_BLUE    PWM5
 
 #define RAMP_DELAY_US            20000
-#define RAINBOW_SOLID_DELAY_US   500000
+#define RAINBOW_SOLID_DELAY_US   1000000
 
 static U8 red_brightness = 0;
 static U8 green_brightness = 0;
@@ -42,15 +43,21 @@ void rgb_initialize()
 	rgb_brightness(PWM_MAX, PWM_MAX, PWM_MAX);
 }
 
-#include "uart.h"
-#include <stdio.h>
-
 void rgb_set(Colour colour, U8 value)
 {
 	U8 brightness = get_brightness(colour);
 	U8 duty = (U8)(((U16)value * brightness) / PWM_MAX);   // scale PWM value
 	PWM_Channel channel = get_channel(colour);
 	pwm_duty(channel, duty);
+}
+
+void rgb_brighten(Colour colour)
+{
+	for (U8 i = 0; i < PWM_MAX; i++)
+	{
+		rgb_set(colour, i);
+		_delay(RAMP_DELAY_US);
+	}
 }
 
 void rgb_fade_in(Colour colour)
@@ -83,32 +90,56 @@ void rgb_off(void)
 	rgb_colour(0, 0, 0);
 }
 
-void rgb_rainbow(void)
-{
-	rgb_set(RED, 255);
-
-	rgb_fade_in(GREEN);
-	_delay(RAINBOW_SOLID_DELAY_US);
-
-	rgb_fade_out(RED);
-	_delay(RAINBOW_SOLID_DELAY_US);
-
-	rgb_fade_in(BLUE);
-	_delay(RAINBOW_SOLID_DELAY_US);
-
-	rgb_fade_out(GREEN);
-	_delay(RAINBOW_SOLID_DELAY_US);
-
-	rgb_fade_in(RED);
-	_delay(RAINBOW_SOLID_DELAY_US);
-
-	rgb_fade_out(BLUE);
-	_delay(RAINBOW_SOLID_DELAY_US);
-}
-
 void rgb_brightness(U8 red, U8 green, U8 blue)
 {
 	red_brightness = red;
 	green_brightness = green;
 	blue_brightness = blue;
+}
+
+void rgb_rainbow(bool enable)
+{
+	timer0_enable(enable);
+}
+
+void rgb_rainbow_update(void)
+{
+	static U8 value = 0;
+	static bool fade = false;
+	static Colour colour = RED;
+
+	rgb_set(colour, value);
+
+	if (fade)
+	{
+		if (value > 0)
+		{
+			value--;
+		}
+		else
+		{
+			colour = (colour + 1) % 3;   // cycle through red, green, and blue
+			fade = false;
+		}
+	}
+	else
+	{
+		if (value < PWM_MAX)
+		{
+			value++;
+		}
+		else
+		{
+			colour = (colour + 1) % 3;   // cycle through red, green, and blue
+			fade = true;
+		}
+	}
+}
+
+void rgb_rainbow_cycle(void)
+{
+	for (int i = 0; i < 256 * 6; i++)
+	{
+		rgb_rainbow_update();
+	}
 }
