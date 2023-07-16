@@ -178,7 +178,6 @@ void uart_echo(void)
 {
 	putch(getch());
 }
-
 #include "led.h"
 void __interrupt() isr()
 {
@@ -192,6 +191,7 @@ void __interrupt() isr()
 			ABORT(ABORT_RX_BUFFER_OVERFLOW);
 		}
 	}
+
 	if (PIR3bits.TX1IF)
 	{
 		U8 byte;
@@ -203,5 +203,13 @@ void __interrupt() isr()
 		}
 
 		PIE3bits.TX1IE = result;  // disable TX interrupt if there is no more data to send
+	}
+
+	if (PIR0bits.TMR0IF)
+	{
+		led_on();
+		_delay(10000);
+		led_off();
+		PIR0bits.TMR0IF = 0;
 	}
 }
