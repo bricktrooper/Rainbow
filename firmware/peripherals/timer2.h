@@ -21,7 +21,7 @@ enum T2CKPS
 	T2CKPS_1   = 0b000    // 1:1 prescaler
 };
 
-void timer2_init(T2CKPS prescaler, U8 period);
+void timer2_initialize(T2CKPS prescaler, U8 period);
 void timer2_enable(bool enable);
 
 #endif /* TIMER2_H */
