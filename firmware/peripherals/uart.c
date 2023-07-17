@@ -48,7 +48,7 @@ void uart_initialize(void)
 	TRISCbits.TRISC4 = OUTPUT;    // configure RC4 as output
 	ANSELCbits.ANSC4 = DIGITAL;   // configure RC4 as digital
 
-	uart_non_blocking(false, false);                          // disable non-blocking mode for RX and TX
+	uart_non_blocking(true, true);                            // enable non-blocking mode for RX and TX
 	queue_initialize(&rx_queue, rx_buffer, RX_BUFFER_SIZE);   // initialize RX queue (used for non-blocking mode)
 	queue_initialize(&tx_queue, tx_buffer, TX_BUFFER_SIZE);   // initialize TX queue (used for non-blocking mode)
 }
@@ -178,38 +178,28 @@ void uart_echo(void)
 {
 	putch(getch());
 }
-#include "led.h"
-void __interrupt() isr()
+
+void uart_rx_service(void)
 {
-	if (PIR3bits.RC1IF)
-	{
-		U8 byte = RC1REG;                            // read byte and clear RC1IF flag
-		bool result = queue_push(&rx_queue, byte);   // push byte to RX queue
+	U8 byte = RC1REG;                            // read byte and clear RC1IF flag
+	bool result = queue_push(&rx_queue, byte);   // push byte to RX queue
 
-		if (!result)
-		{
-			ABORT(ABORT_RX_BUFFER_OVERFLOW);
-		}
+	if (!result)
+	{
+		ABORT(ABORT_RX_BUFFER_OVERFLOW);
+	}
+}
+
+void uart_tx_service(void)
+{
+
+	U8 byte;
+	bool result = queue_pop(&tx_queue, &byte);   // pop byte from TX queue
+
+	if (result)
+	{
+		TX1REG = byte;   // load the byte for transmission
 	}
 
-	if (PIR3bits.TX1IF)
-	{
-		U8 byte;
-		bool result = queue_pop(&tx_queue, &byte);   // pop byte from TX queue
-
-		if (result)
-		{
-			TX1REG = byte;   // load the byte for transmission
-		}
-
-		PIE3bits.TX1IE = result;  // disable TX interrupt if there is no more data to send
-	}
-
-	if (PIR0bits.TMR0IF)
-	{
-		led_on();
-		_delay(10000);
-		led_off();
-		PIR0bits.TMR0IF = 0;
-	}
+	PIE3bits.TX1IE = result;  // disable TX interrupt if there is no more data to send
 }

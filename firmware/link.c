@@ -26,7 +26,6 @@ static U8 get_data_length(Opcode opcode)
 		case OPCODE_COLOUR:     return sizeof(RGB);
 		case OPCODE_BRIGHTNESS: return sizeof(RGB);
 		case OPCODE_RAINBOW:    return 0;
-		case OPCODE_RESPONSE:   return sizeof(Result);
 	}
 }
 
@@ -47,11 +46,6 @@ static U8 calculate_checksum(Header * header, void * data)
 	}
 
 	return checksum;
-}
-
-void link_state_machine_reset(void)
-{
-	state = STATE_MAGIC;
 }
 
 bool link_state_machine(Header * header, void * data, U8 length)
@@ -112,11 +106,12 @@ bool link_state_machine(Header * header, void * data, U8 length)
 			/*
 			There is nothing to do here since the entire packet is received.
 			The packet should be verified by the caller.
-			The caller should reset the state machine to receive another packet.
+			The state machine resets here and starts looking for the next magic number.
 			*/
 
 			led_off();
 			ready = true;
+			state = STATE_MAGIC;   // reset state machine
 			break;
 		}
 	}
@@ -124,7 +119,7 @@ bool link_state_machine(Header * header, void * data, U8 length)
 	return ready;
 }
 
-Result link_receive(Header * header, void * data, U8 length)
+Result link_listen(Header * header, void * data, U8 length)
 {
 	// wait for magic number to be received
 	do
@@ -160,12 +155,12 @@ Result link_receive(Header * header, void * data, U8 length)
 	return RESULT_SUCCESS;
 }
 
-void link_transmit(Result result)
+void link_respond(Opcode opcode, Result result)
 {
 	Header header;
 	header.magic = MAGIC;
-	header.opcode = OPCODE_RESPONSE;
-	header.length = get_data_length(header.opcode);
+	header.opcode = opcode;
+	header.length = sizeof(Result);
 	header.checksum = calculate_checksum(&header, &result);
 
 	uart_transmit(&header, sizeof(Header));

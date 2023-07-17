@@ -19,8 +19,7 @@ enum Opcode
 	OPCODE_PING       = 0x00,
 	OPCODE_COLOUR     = 0x01,
 	OPCODE_BRIGHTNESS = 0x02,
-	OPCODE_RAINBOW    = 0x03,
-	OPCODE_RESPONSE   = 0xFF
+	OPCODE_RAINBOW    = 0x03
 } __attribute__((packed));
 
 enum Result
@@ -28,7 +27,7 @@ enum Result
 	RESULT_SUCCESS           = 0x00,
 	RESULT_ERROR_CHECKSUM    = 0x01,
 	RESULT_ERROR_OPCODE      = 0x02,
-	RESULT_ERROR_DATA_LENGTH = 0x03,
+	RESULT_ERROR_DATA_LENGTH = 0x03
 } __attribute__((packed));
 
 struct Header
@@ -46,10 +45,9 @@ struct RGB
 	U8 blue;
 } __attribute__((packed));
 
-Result link_receive(Header * header, void * data, U8 length);
-void link_transmit(Result result);
+Result link_listen(Header * header, void * data, U8 length);
+void link_respond(Opcode opcode, Result result);
 Result link_verify(Header * header, void * data);
 bool link_state_machine(Header * header, void * data, U8 length);
-void link_state_machine_reset(void);
 
 #endif /* LINK_H */

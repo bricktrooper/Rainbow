@@ -16,6 +16,7 @@ static Result service(Opcode opcode, void * data)
 		}
 		case OPCODE_COLOUR:
 		{
+			rgb_rainbow(false);
 			RGB * colour = data;
 			rgb_colour(colour->red, colour->green, colour->blue);
 			return RESULT_SUCCESS;
@@ -28,7 +29,7 @@ static Result service(Opcode opcode, void * data)
 		}
 		case OPCODE_RAINBOW:
 		{
-			//rgb_rainbow();
+			rgb_rainbow(true);
 			return RESULT_SUCCESS;
 		}
 		default:
@@ -38,29 +39,19 @@ static Result service(Opcode opcode, void * data)
 	}
 }
 
-#include <stdio.h>
-#include "timer0.h"
 void main(void)
 {
 	system_initialize();
-	uart_non_blocking(true, true);
-	rgb_brightness(255, 64, 255);
-	timer0_initialize(T0CKPS_8192, 255);
-	timer0_enable(true);
+	rgb_brightness(255, 48, 255);
 
 	while (1)
 	{
-		//rgb_rainbow_update();
-		continue;
-
 		Header header;
 		U8 data [4];
-
 		bool ready = link_state_machine(&header, data, sizeof(data));
 
 		if (ready)
 		{
-			link_state_machine_reset();
 			Result result = link_verify(&header, data);
 
 			if (result == RESULT_SUCCESS)
@@ -68,7 +59,26 @@ void main(void)
 				result = service(header.opcode, data);
 			}
 
-			link_transmit(result);
+			link_respond(header.opcode, result);
 		}
+	}
+}
+
+void __interrupt() isr()
+{
+	if (PIR3bits.RC1IF)
+	{
+		uart_rx_service();
+	}
+
+	if (PIR3bits.TX1IF)
+	{
+		uart_tx_service();
+	}
+
+	if (PIR0bits.TMR0IF)
+	{
+		rgb_rainbow_update();
+		PIR0bits.TMR0IF = 0;
 	}
 }

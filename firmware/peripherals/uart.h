@@ -13,5 +13,7 @@ void uart_read(void * data, U8 size);
 void uart_echo(void);
 void uart_non_blocking(bool rx, bool tx);
 U8 uart_peek(void);
+void uart_rx_service(void);
+void uart_tx_service(void);
 
 #endif /* UART_H */
