@@ -68,22 +68,22 @@ static void clear_rx_overrun(void)
 	RC1STAbits.CREN = 1;
 }
 
-void uart_transmit(void const * data, U8 size)
+void uart_transmit(void const * data, U8 length)
 {
 	char * bytes = (char *)data;
 
-	for (int i = 0; i < size; i++)
+	for (int i = 0; i < length; i++)
 	{
 		while (!PIR3bits.TX1IF);   // wait for the TX register to empty
 		TX1REG = bytes[i];	       // write byte to TX register to start transmission
 	}
 }
 
-void uart_receive(void * data, U8 size)
+void uart_receive(void * data, U8 length)
 {
 	char * bytes = (char *)data;
 
-	for (int i = 0; i < size; i++)
+	for (int i = 0; i < length; i++)
 	{
 		// detect overrun errors
 		if (RC1STAbits.OERR)
@@ -97,12 +97,12 @@ void uart_receive(void * data, U8 size)
 	}
 }
 
-void uart_write(void * data, U8 size)
+void uart_write(void * data, U8 length)
 {
 	char * bytes = (char *)data;
 	U8 i = 0;
 
-	while (i < size)
+	while (i < length)
 	{
 		// try to push next byte to queue
 		bool result = queue_push(&tx_queue, bytes[i]);
@@ -121,12 +121,12 @@ void uart_write(void * data, U8 size)
 	PIE3bits.TX1IE = 1;   // enable TX interrupt since there is new data to send
 }
 
-void uart_read(void * data, U8 size)
+void uart_read(void * data, U8 length)
 {
 	char * bytes = (char *)data;
 	U8 i = 0;
 
-	while (i < size)
+	while (i < length)
 	{
 		// try to pop next byte from queue
 		U8 byte;

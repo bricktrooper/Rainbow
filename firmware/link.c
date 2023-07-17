@@ -10,15 +10,15 @@ typedef enum State State;
 
 enum State
 {
-	STATE_MAGIC,    // waiting for magic number
-	STATE_HEADER,   // waiting for rest of header
-	STATE_DATA,     // waiting for data
-	STATE_READY     // entire packet received and valid
+	STATE_MAGIC,     // waiting for magic number
+	STATE_HEADER,    // waiting for rest of header
+	STATE_PAYLOAD,   // waiting for payload
+	STATE_READY      // entire packet received and valid
 };
 
 static State state = STATE_MAGIC;
 
-static U8 get_data_length(Opcode opcode)
+static U8 get_payload_length(Opcode opcode)
 {
 	switch (opcode)
 	{
@@ -26,10 +26,11 @@ static U8 get_data_length(Opcode opcode)
 		case OPCODE_COLOUR:     return sizeof(RGB);
 		case OPCODE_BRIGHTNESS: return sizeof(RGB);
 		case OPCODE_RAINBOW:    return 0;
+		case OPCODE_RESPONSE:   return 1;
 	}
 }
 
-static U8 calculate_checksum(Header * header, void * data)
+static U8 calculate_checksum(Header * header, void * payload)
 {
 	U8 checksum = header->checksum;   // cancel out XOR of checksum (A (+) A = 0)
 
@@ -41,14 +42,14 @@ static U8 calculate_checksum(Header * header, void * data)
 
 	for (U8 i = 0; i < header->length; i++)
 	{
-		U8 * bytes = (U8 *)data;
+		U8 * bytes = (U8 *)payload;
 		checksum ^= bytes[i];
 	}
 
 	return checksum;
 }
 
-bool link_state_machine(Header * header, void * data, U8 length)
+bool link_state_machine(Header * header, void * payload, U8 length)
 {
 	bool ready = false;
 
@@ -56,14 +57,14 @@ bool link_state_machine(Header * header, void * data, U8 length)
 	{
 		case STATE_MAGIC:
 		{
-			U8 const size = sizeof(header->magic);
+			U8 const length = sizeof(header->magic);
 
-			if (uart_peek() < size)
+			if (uart_peek() < length)
 			{
 				break;
 			}
 
-			uart_read(&header->magic, size);
+			uart_read(&header->magic, length);
 
 			if (header->magic != MAGIC)
 			{
@@ -75,30 +76,30 @@ bool link_state_machine(Header * header, void * data, U8 length)
 		}
 		case STATE_HEADER:
 		{
-			U8 const size = sizeof(Header) - sizeof(header->magic);
+			U8 const length = sizeof(Header) - sizeof(header->magic);
 
-			if (uart_peek() < size)
+			if (uart_peek() < length)
 			{
 				break;
 			}
 
-			uart_read(&header->opcode, size);
+			uart_read(&header->opcode, length);
 
 			if (header->length > length)
 			{
-				ABORT(ABORT_DATA_OVERFLOW);
+				ABORT(ABORT_PAYLOAD_OVERFLOW);
 			}
 
-			state = STATE_DATA;   // fall through
+			state = STATE_PAYLOAD;   // fall through
 		}
-		case STATE_DATA:
+		case STATE_PAYLOAD:
 		{
 			if (uart_peek() < header->length)
 			{
 				break;
 			}
 
-			uart_read(data, header->length);
+			uart_read(payload, header->length);
 			state = STATE_READY;   // fall through
 		}
 		case STATE_READY:
@@ -119,7 +120,7 @@ bool link_state_machine(Header * header, void * data, U8 length)
 	return ready;
 }
 
-Result link_listen(Header * header, void * data, U8 length)
+Result link_listen(Header * header, void * payload, U8 length)
 {
 	// wait for magic number to be received
 	do
@@ -131,35 +132,35 @@ Result link_listen(Header * header, void * data, U8 length)
 	// receive rest of header
 	uart_receive((U8 *)header + sizeof(header->magic), sizeof(Header) - sizeof(header->magic));
 
-	// receive data
+	// receive payload
 	if (length < header->length)
 	{
-		ABORT(ABORT_DATA_OVERFLOW);
+		ABORT(ABORT_PAYLOAD_OVERFLOW);
 	}
 
-	uart_receive(data, header->length);
+	uart_receive(payload, header->length);
 
 	// verify checksum
-	if (calculate_checksum(header, data) != header->checksum)
+	if (calculate_checksum(header, payload) != header->checksum)
 	{
 		return RESULT_ERROR_CHECKSUM;
 	}
 
-	// verify data length
-	if (get_data_length(header->opcode) != header->length)
+	// verify payload length
+	if (get_payload_length(header->opcode) != header->length)
 	{
-		return RESULT_ERROR_DATA_LENGTH;
+		return RESULT_ERROR_PAYLOAD_LENGTH;
 	}
 
 	// packet is valid
 	return RESULT_SUCCESS;
 }
 
-void link_respond(Opcode opcode, Result result)
+void link_respond(Result result)
 {
 	Header header;
 	header.magic = MAGIC;
-	header.opcode = opcode;
+	header.opcode = OPCODE_RESPONSE;
 	header.length = sizeof(Result);
 	header.checksum = calculate_checksum(&header, &result);
 
@@ -167,18 +168,18 @@ void link_respond(Opcode opcode, Result result)
 	uart_transmit(&result, header.length);
 }
 
-Result link_verify(Header * header, void * data)
+Result link_verify(Header * header, void * payload)
 {
 	// verify checksum
-	if (calculate_checksum(header, data) != header->checksum)
+	if (calculate_checksum(header, payload) != header->checksum)
 	{
 		return RESULT_ERROR_CHECKSUM;
 	}
 
-	// verify data length
-	if (get_data_length(header->opcode) != header->length)
+	// verify payload length
+	if (get_payload_length(header->opcode) != header->length)
 	{
-		return RESULT_ERROR_DATA_LENGTH;
+		return RESULT_ERROR_PAYLOAD_LENGTH;
 	}
 
 	// packet is valid

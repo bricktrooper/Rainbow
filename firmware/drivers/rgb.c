@@ -10,7 +10,8 @@
 #define PWM_CHANNEL_GREEN   PWM4
 #define PWM_CHANNEL_BLUE    PWM5
 
-#define RAMP_DELAY_US            20000
+#define RAMP_DELAY_US           20000
+#define SOLID_COLOUR_DELAY_US   5000000
 
 static U8 red_brightness = 0;
 static U8 green_brightness = 0;
@@ -112,6 +113,7 @@ void rgb_rainbow_update(void)
 		{
 			colour = (colour + 1) % 3;   // cycle through red, green, and blue
 			fade = false;
+			_delay(SOLID_COLOUR_DELAY_US);
 		}
 	}
 	else
@@ -124,6 +126,7 @@ void rgb_rainbow_update(void)
 		{
 			colour = (colour + 1) % 3;   // cycle through red, green, and blue
 			fade = true;
+			_delay(SOLID_COLOUR_DELAY_US);
 		}
 	}
 }

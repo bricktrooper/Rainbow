@@ -6,7 +6,7 @@
 #include "rgb.h"
 #include "link.h"
 
-static Result service(Opcode opcode, void * data)
+static Result service(Opcode opcode, void * payload)
 {
 	switch (opcode)
 	{
@@ -17,13 +17,13 @@ static Result service(Opcode opcode, void * data)
 		case OPCODE_COLOUR:
 		{
 			rgb_rainbow(false);
-			RGB * colour = data;
+			RGB * colour = payload;
 			rgb_colour(colour->red, colour->green, colour->blue);
 			return RESULT_SUCCESS;
 		}
 		case OPCODE_BRIGHTNESS:
 		{
-			RGB * brightness = data;
+			RGB * brightness = payload;
 			rgb_brightness(brightness->red, brightness->green, brightness->blue);
 			return RESULT_SUCCESS;
 		}
@@ -47,19 +47,19 @@ void main(void)
 	while (1)
 	{
 		Header header;
-		U8 data [4];
-		bool ready = link_state_machine(&header, data, sizeof(data));
+		U8 payload [4];
+		bool ready = link_state_machine(&header, payload, sizeof(payload));
 
 		if (ready)
 		{
-			Result result = link_verify(&header, data);
+			Result result = link_verify(&header, payload);
 
 			if (result == RESULT_SUCCESS)
 			{
-				result = service(header.opcode, data);
+				result = service(header.opcode, payload);
 			}
 
-			link_respond(header.opcode, result);
+			link_respond(result);
 		}
 	}
 }
