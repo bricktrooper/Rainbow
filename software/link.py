@@ -1,10 +1,43 @@
 import struct
 import log
+import uart
 
 from log import colours
 from enum import IntEnum
+from cli import ERROR, SUCCESS
 
-#define MAX_DATA_LENGTH   256
+class RGB:
+	FORMAT = "<BBB"   # little endian
+	SIZE = struct.calcsize(FORMAT)
+
+	def __init__(self, red = 0, green = 0, blue = 0):
+		self.red = red
+		self.green = green
+		self.blue = blue
+
+	def __str__(self):
+		string = ""
+		string += "%s%-5s%s : %u\n" % (colours.RED, "red", colours.RESET, self.red)
+		string += "%s%-5s%s : %u\n" % (colours.GREEN, "green", colours.RESET, self.green)
+		string += "%s%-5s%s : %u" % (colours.BLUE, "blue", colours.RESET, self.blue)
+		return string
+
+	def print(self):
+		print(str(self))
+
+	def unpack(self, data, offset = 0):
+		fields = struct.unpack_from(RGB.FORMAT, data, offset)
+		self.red = fields[0]
+		self.green = fields[1]
+		self.blue = fields[2]
+
+	def pack(self):
+		return struct.pack(
+			self.FORMAT,
+			self.red,
+			self.green,
+			self.blue,
+		)
 
 class Opcode(IntEnum):
 	PING       = 0x00
@@ -14,94 +47,141 @@ class Opcode(IntEnum):
 	RESPONSE   = 0xFF
 
 class Result(IntEnum):
-	SUCCESS           = 0x00
-	ERROR_CHECKSUM    = 0x01
-	ERROR_OPCODE      = 0x02
-	ERROR_DATA_LENGTH = 0x03
+	SUCCESS              = 0x00
+	ERROR_CHECKSUM       = 0x01
+	ERROR_OPCODE         = 0x02
+	ERROR_PAYLAOD_LENGTH = 0x03
+
+OPCODES = {
+	"PING":         { "opcode": Opcode.PING,       "length": 0},
+	"COLOUR":       { "opcode": Opcode.COLOUR,     "length": RGB.SIZE},
+	"BRIGHTNESS":   { "opcode": Opcode.BRIGHTNESS, "length": RGB.SIZE},
+	"RAINBOW":      { "opcode": Opcode.RAINBOW,    "length": 0},
+	"RESPONSE":     { "opcode": Opcode.RESPONSE,   "length": 1}
+}
+
+def opcode_name(opcode):
+	for i in OPCODES:
+		if OPCODES[i]["opcode"] == opcode:
+			return i
+	log.error("No such opcode '0x%X'" % (opcode))
+	return ERROR
 
 class Header:
-	FORMAT = "HBBB"
+	FORMAT = "<HBBB"   # little endian
 	SIZE = struct.calcsize(FORMAT)
 	MAGIC = 0xCE23
+	MAGIC_FORMAT = "<H"
+	MAGIC_SIZE = struct.calcsize(MAGIC_FORMAT)
+	MAX_PAYLOAD_LENGTH = 255
 
-	def __init__(self, magic = None, opcode = None, length = None, checksum = None):
+	def __init__(self, magic = 0, opcode = 0, length = 0, checksum = 0):
 		self.magic = magic
 		self.opcode = opcode
-		self.length = length   # MAX_DATA_LENGTH == 256
+		self.length = length
 		self.checksum = checksum
+
+		if length is not None and length > Header.MAX_PAYLOAD_LENGTH:
+			log.error(f"Payload length cannot exceed 255")
+			exit(ERROR)
 
 	def __str__(self):
 		string = ""
-		string += "%s%-8s%s : 0x%X\r\n" % (colours.MAGENTA, "magic", colours.RESET, self.magic)
-		string += "%s%-8s%s : 0x%X\r\n" % (colours.MAGENTA, "opcode", colours.RESET, self.opcode)
-		string += "%s%-8s%s : %u\r\n" % (colours.MAGENTA, "length", colours.RESET, self.length)
-		string += "%s%-8s%s : 0x%X\r\n" % (colours.MAGENTA, "checksum", colours.RESET, self.checksum)
+		string += "%s%-8s%s : 0x%X\n" % (colours.MAGENTA, "magic", colours.RESET, self.magic)
+		string += "%s%-8s%s : 0x%X\n" % (colours.MAGENTA, "opcode", colours.RESET, self.opcode)
+		string += "%s%-8s%s : %u B\n" % (colours.MAGENTA, "length", colours.RESET, self.length)
+		string += "%s%-8s%s : 0x%X" % (colours.MAGENTA, "checksum", colours.RESET, self.checksum)
 		return string
 
-	def unpack(self, data, offset = 0):
-		# little endian
-		fields = struct.unpack_from(f"<{Header.FORMAT}", data, offset)
+	def print(self):
+		print(str(self))
+
+	def unpack(self, payload, offset = 0):
+		fields = struct.unpack_from(Header.FORMAT, payload, offset)
 		self.magic = fields[0]
 		self.opcode = fields[1]
 		self.length = fields[2]
 		self.checksum = fields[3]
 
-class RGB:
-	FORMAT = "BBB"
-	SIZE = struct.calcsize(FORMAT)
+	def pack(self):
+		return struct.pack(
+			self.FORMAT,
+			self.magic,
+			self.opcode,
+			self.length,
+			self.checksum
+		)
 
-	def __init__(self, red = None, green = None, blue = None):
-		self.red = red
-		self.green = green
-		self.blue = blue
+def calculate_checksum(header, payload):
+	checksum = header.checksum   # cancel out XOR of checksum (A (+) A = 0)
 
-	def __str__(self):
-		string = ""
-		string += "%s%-5s%s : %u\r\n" % (colours.RED, "red", colours.RESET, self.red)
-		string += "%s%-5s%s : %u\r\n" % (colours.GREEN, "green", colours.RESET, self.green)
-		string += "%s%-5s%s : %u\r\n" % (colours.BLUE, "blue", colours.RESET, self.blue)
-		return string
+	bytes = header.pack()
+	for i in range(Header.SIZE):
+		checksum ^= bytes[i]
 
-	def unpack(self, data, offset = 0):
-		# little endian
-		fields = struct.unpack_from(f"<{RGB.FORMAT}", data, offset)
-		self.red = fields[0]
-		self.green = fields[1]
-		self.blue = fields[2]
+	for i in range(header.length):
+		checksum ^= payload[i]
 
-#def receive():
-#	# wait for magic number to be received
-#	log.debug("Listening for magic number")
-#	magic = ~Header.MAGIC
-#	while magic != Header.MAGIC:
-#		uart_receive(&header->magic, sizeof(header->magic))
+	return checksum
 
-#	// receive rest of header
-#	uart_receive((U8 *)header + sizeof(header->magic), sizeof(Header) - sizeof(header->magic));
+def verify(header, payload):
+	# verify checksum
+	checksum = calculate_checksum(header, payload)
+	if header.checksum != checksum:
+		log.error("Expected checksum '0x%X' but received '0x%X'" % (checksum, header.checksum))
+		return ERROR
 
-#	// receive data
-#	if (length < header->length)
-#	{
-#		ABORT(ABORT_RX_BUFFER_OVERFLOW);
-#	}
+	# verify payload length
+	length = OPCODES[opcode_name(header.opcode)]["length"]
+	if header.length != length:
+		log.error("Expected length '0x%X' but received '0x%X'" % (length, header.length))
+		return ERROR
 
-#	uart_receive(data, header->length);
+	# verify opcode
+	if header.opcode != Opcode.RESPONSE:
+		log.error("Expected opcode '0x%X' but received '0x%X'" % (Opcode.RESPONSE, header.opcode))
+		return ERROR
 
-#	// verify checksum
-#	if (link_checksum(header, data) != header->checksum)
-#	{
-#		return RESULT_ERROR_CHECKSUM;
-#	}
+	return SUCCESS
 
-#	// verify data length
-#	if (link_data_length(header->opcode) != header->length)
-#	{
-#		return RESULT_ERROR_DATA_LENGTH;
-#	}
+def request(opcode, payload):
+	name = opcode_name(opcode)
+	length = OPCODES[name]["length"]
+	if length != len(payload):
+		log.error(f"Opcode '{name}' requires length '{length}' but found '{len(payload)}'")
+		return ERROR
 
-#	// packet is valid
-#	return RESULT_SUCCESS;
+	header = Header()
+	header.magic = Header.MAGIC
+	header.opcode = opcode
+	header.length = length
+	header.checksum = calculate_checksum(header, payload)
 
-#void link_transmit(Result result);
-#U8 link_checksum(Header * header, void * data);
-#U8 link_data_length(Opcode opcode);
+	uart.transmit(header.pack())
+	uart.transmit(payload)
+
+def listen():
+	# wait for magic number to be received
+	magic = ~Header.MAGIC
+	bytes = None
+	while magic != Header.MAGIC:
+		bytes = uart.receive(Header.MAGIC_SIZE)
+		fields = struct.unpack(Header.MAGIC_FORMAT, bytes)
+		magic = fields[0]
+
+	# receive rest of header
+	bytes += uart.receive(Header.SIZE - Header.MAGIC_SIZE)
+	header = Header()
+	header.unpack(bytes)
+	header.print()
+
+	# receive payload
+	payload = uart.receive(header.length)
+
+	# verify response packet
+	if verify(header, payload) == ERROR:
+		log.error(f"Received invalid response packet")
+		return ERROR
+
+	log.success(f"Received response packet")
+	return header, payload
