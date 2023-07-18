@@ -7,8 +7,9 @@
 #include "pps.h"
 #include "queue.h"
 
+// size can range from 0 to 255
 #define RX_BUFFER_SIZE   16
-#define TX_BUFFER_SIZE   16
+#define TX_BUFFER_SIZE   255
 
 static Queue rx_queue;
 static Queue tx_queue;
