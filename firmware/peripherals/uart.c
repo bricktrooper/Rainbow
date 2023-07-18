@@ -98,7 +98,7 @@ void uart_receive(void * data, U8 length)
 	}
 }
 
-void uart_write(void * data, U8 length)
+void uart_push(void * data, U8 length)
 {
 	char * bytes = (char *)data;
 	U8 i = 0;
@@ -122,7 +122,7 @@ void uart_write(void * data, U8 length)
 	PIE3bits.TX1IE = 1;   // enable TX interrupt since there is new data to send
 }
 
-void uart_read(void * data, U8 length)
+void uart_pop(void * data, U8 length)
 {
 	char * bytes = (char *)data;
 	U8 i = 0;
@@ -142,6 +142,30 @@ void uart_read(void * data, U8 length)
 	}
 }
 
+void uart_read(void * data, U8 length)
+{
+	if (non_blocking_rx)
+	{
+		uart_pop(data, length);   // non-blocking
+	}
+	else
+	{
+		uart_receive(data, length);   // blocking
+	}
+}
+
+void uart_write(void * data, U8 length)
+{
+	if (non_blocking_tx)
+	{
+		uart_push(data, length);   // non-blocking
+	}
+	else
+	{
+		uart_transmit(data, length);   // blocking
+	}
+}
+
 U8 uart_peek(void)
 {
 	return rx_queue.length;
@@ -149,29 +173,13 @@ U8 uart_peek(void)
 
 void putch(char byte)
 {
-	if (non_blocking_tx)
-	{
-		uart_write(&byte, 1);
-	}
-	else
-	{
-		uart_transmit(&byte, 1);
-	}
+	uart_write(&byte, 1);
 }
 
 char getch(void)
 {
 	char byte;
-
-	if (non_blocking_rx)
-	{
-		uart_read(&byte, 1);
-	}
-	else
-	{
-		uart_receive(&byte, 1);
-	}
-
+	uart_read(&byte, 1);
 	return byte;
 }
 

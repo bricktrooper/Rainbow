@@ -18,6 +18,8 @@ enum Opcode
 	OPCODE_COLOUR     = 0x01,
 	OPCODE_BRIGHTNESS = 0x02,
 	OPCODE_RAINBOW    = 0x03,
+
+	OPCODE_count,
 	OPCODE_RESPONSE   = 0xFF
 } __attribute__((packed));
 

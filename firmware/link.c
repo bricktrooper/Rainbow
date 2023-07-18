@@ -20,7 +20,7 @@ enum State
 
 static State state = STATE_MAGIC;
 
-static U8 get_payload_length(Opcode opcode)
+static inline U8 get_payload_length(Opcode opcode)
 {
 	switch (opcode)
 	{
@@ -29,7 +29,13 @@ static U8 get_payload_length(Opcode opcode)
 		case OPCODE_BRIGHTNESS: return sizeof(RGB);
 		case OPCODE_RAINBOW:    return 1;
 		case OPCODE_RESPONSE:   return 1;
+		default:                return 0;
 	}
+}
+
+static bool valid_opcode(U8 opcode)
+{
+	return opcode < OPCODE_count;
 }
 
 static U8 calculate_checksum(Header * header, void * payload)
@@ -137,6 +143,11 @@ bool link_state_machine(Header * header, void * payload, U8 length)
 			state = STATE_MAGIC;   // reset state machine
 			break;
 		}
+		default:
+		{
+			state = STATE_MAGIC;
+			break;
+		}
 	}
 
 	if (state == STATE_MAGIC)
@@ -191,12 +202,18 @@ void link_respond(Result result)
 	header.length = sizeof(Result);
 	header.checksum = calculate_checksum(&header, &result);
 
-	uart_transmit(&header, sizeof(Header));
-	uart_transmit(&result, header.length);
+	uart_write(&header, sizeof(Header));
+	uart_write(&result, header.length);
 }
 
 Result link_verify(Header * header, void * payload)
 {
+	// verify opcode
+	if (!valid_opcode(header->opcode))
+	{
+		return RESULT_ERROR_OPCODE;
+	}
+
 	// verify checksum
 	if (calculate_checksum(header, payload) != header->checksum)
 	{
