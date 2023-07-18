@@ -17,6 +17,8 @@ static U8 red_brightness = 0;
 static U8 green_brightness = 0;
 static U8 blue_brightness = 0;
 
+static U8 rainbow_period = 32;
+
 static inline PWM_Channel get_channel(Colour colour)
 {
 	switch (colour)
@@ -39,7 +41,7 @@ static inline PWM_Channel get_brightness(Colour colour)
 
 void rgb_initialize()
 {
-	timer0_initialize(T0CKPS_1024, 32);   // timer settings for rainbow
+	timer0_initialize(T0CKPS_1024, rainbow_period);   // timer settings for rainbow
 	rgb_brightness(PWM_MAX, PWM_MAX, PWM_MAX);
 	rgb_off();
 }
@@ -54,7 +56,7 @@ void rgb_set(Colour colour, U8 value)
 
 void rgb_brighten(Colour colour)
 {
-	for (U8 i = 0; i < PWM_MAX; i++)
+	for (U8 i = 0; i < UINT8_MAX; i++)
 	{
 		rgb_set(colour, i);
 		_delay(RAMP_DELAY_US);
@@ -63,7 +65,7 @@ void rgb_brighten(Colour colour)
 
 void rgb_fade(Colour colour)
 {
-	for (U8 i = PWM_MAX; i > 0; i--)
+	for (U8 i = UINT8_MAX; i > 0; i--)
 	{
 		rgb_set(colour, i);
 		_delay(RAMP_DELAY_US);
@@ -93,6 +95,11 @@ void rgb_brightness(U8 red, U8 green, U8 blue)
 void rgb_rainbow(bool enable)
 {
 	timer0_enable(enable);
+}
+
+void rgb_rainbow_speed(U8 speed)
+{
+	timer0_period(UINT8_MAX - speed);
 }
 
 void rgb_rainbow_update(void)

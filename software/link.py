@@ -50,7 +50,7 @@ class Result(IntEnum):
 	SUCCESS              = 0x00
 	ERROR_CHECKSUM       = 0x01
 	ERROR_OPCODE         = 0x02
-	ERROR_PAYLAOD_LENGTH = 0x03
+	ERROR_PAYLOAD_LENGTH = 0x03
 
 OPCODES = {
 	"PING":         { "opcode": Opcode.PING,       "length": 0},
@@ -150,16 +150,16 @@ def request(opcode, payload):
 	if length != len(payload):
 		log.error(f"Opcode '{name}' requires length '{length}' but found '{len(payload)}'")
 		return ERROR
-
+	print(opcode.name)
 	header = Header()
 	header.magic = Header.MAGIC
 	header.opcode = opcode
 	header.length = length
 	header.checksum = calculate_checksum(header, payload)
-	log.verbose(f"Request:\n{header}")
+	log.debug(f"REQUEST:\n{header}")
 
 	uart.transmit(header.pack())
-	uart.transmit(payload)
+	uart.transmit(bytearray(payload))
 
 def listen():
 	# wait for magic number to be received
@@ -183,7 +183,7 @@ def listen():
 	# unpack entire header
 	header = Header()
 	header.unpack(data)
-	log.verbose(f"Response:\n{header}")
+	log.debug(f"RESPONSE:\n{header}")
 
 	# receive payload
 	payload = uart.receive(header.length)
@@ -196,7 +196,8 @@ def listen():
 		log.error(f"Received invalid response packet")
 		return ERROR
 
-	log.success(f"Received response packet")
+	result = Result(struct.unpack("<B", payload)[0])
+	log.success(f"Received response: {result.name}")
 	return header, payload
 
 def ping():
@@ -206,7 +207,7 @@ def ping():
 		return ERROR
 	return SUCCESS
 
-def rainbow():
+def rainbow(speed):
 	if request(Opcode.RAINBOW, []) == ERROR:
 		return ERROR
 	if listen() == ERROR:

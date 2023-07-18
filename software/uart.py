@@ -39,7 +39,7 @@ def purge():
 		size = len(serial.read(1024))
 		if size == 0:
 			break
-		log.debug(f"Discarding {size} B from serial port")
+		log.verbose(f"Discarding {size} B from serial port")
 
 def transmit(data):
 	global serial
@@ -52,7 +52,7 @@ def receive(length):
 	#data = data()
 	#while len(data) < length:
 	#	data += serial.read(length)
-	#	log.debug(f"Received {len(data)}/{length} B from serial port")
+	#	log.verbose(f"Received {len(data)}/{length} B from serial port")
 	#return data
 
 def dump():

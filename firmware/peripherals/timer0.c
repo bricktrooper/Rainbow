@@ -42,7 +42,7 @@ void timer0_initialize(T0CKPS prescaler, U8 period)
 	T0CON1bits.T0CS = T0CS_FOSC4;     // Fosc/4 clock source
 	T0CON1bits.T0ASYNC = 0;           // synchronize input clock to Fosc/4 (max frequency)
 	T0CON1bits.T0CKPS = prescaler;    // 1:1 prescaler
-	TMR0H = period;                   // timer period (8 b mode only)
+	timer0_period(period);            // timer period
 	timer0_interrupt(false);          // disable interrupt
 	PIR0bits.TMR0IF = 0;              // reset interrupt flag (set when TMR0L == TMR0H)
 }
@@ -60,4 +60,9 @@ void timer0_interrupt(bool enable)
 bool timer0_expired(void)
 {
 	return PIR0bits.TMR0IF;
+}
+
+void timer0_period(U8 period)
+{
+	TMR0H = period;   // TMR0H is the period only in timer 0's 8 b mode
 }

@@ -25,7 +25,7 @@ static U8 get_payload_length(Opcode opcode)
 		case OPCODE_PING:       return 0;
 		case OPCODE_COLOUR:     return sizeof(RGB);
 		case OPCODE_BRIGHTNESS: return sizeof(RGB);
-		case OPCODE_RAINBOW:    return 0;
+		case OPCODE_RAINBOW:    return 1;
 		case OPCODE_RESPONSE:   return 1;
 	}
 }

@@ -33,5 +33,6 @@ void timer0_initialize(T0CKPS prescaler, U8 period);
 void timer0_enable(bool enable);
 void timer0_interrupt(bool enable);
 bool timer0_expired(void);
+void timer0_period(U8 period);
 
 #endif /* TIMER0_H */

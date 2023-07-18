@@ -29,6 +29,8 @@ static Result service(Opcode opcode, void * payload)
 		}
 		case OPCODE_RAINBOW:
 		{
+			U8 speed = *(U8 *)payload;
+			rgb_rainbow_speed(speed);
 			rgb_rainbow(true);
 			return RESULT_SUCCESS;
 		}

@@ -23,19 +23,30 @@ def ping(prefix, args):
 	return result
 
 def rainbow(prefix, args):
+	speed = None
+	if len(args) > 0:
+		try:
+			speed = int(args.pop(0))
+		except ValueError:
+			log.error(f"Rainbow speed must be an integer")
+			return ERROR
+	if speed < 0 or speed > 255:
+		log.error(f"Rainbow speed must be between 0 and 255")
+		return ERROR
+
 	log.info("RAINBOW")
 	uart.connect()
-	result = link.rainbow()
+	result = link.rainbow(speed)
 	uart.disconnect()
 	return result
 
 def main():
-	#log.suppress(log.Level.DEBUG)
+	log.trace(False, False, True, True)
 	program = argv.pop(0)
 	prefix = f"{program}"
 	command = Command(prefix, 1)
 	command.leaf(ping, "ping", "[count]", 0, 1)
-	command.leaf(rainbow, "rainbow", "", 0, 0)
+	command.leaf(rainbow, "rainbow", "<speed>", 1, 1)
 	result = command.run(argv)
 	exit(result)
 
