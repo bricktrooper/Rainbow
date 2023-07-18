@@ -61,6 +61,8 @@ void main(void)
 
 			link_respond(result);
 		}
+
+		rgb_rainbow_update();
 	}
 }
 
@@ -70,15 +72,8 @@ void __interrupt() isr()
 	{
 		uart_rx_service();
 	}
-
-	if (PIR3bits.TX1IF)
+	else if (PIR3bits.TX1IF)
 	{
 		uart_tx_service();
-	}
-
-	if (PIR0bits.TMR0IF)
-	{
-		rgb_rainbow_update();
-		PIR0bits.TMR0IF = 0;
 	}
 }

@@ -97,6 +97,11 @@ void rgb_rainbow(bool enable)
 
 void rgb_rainbow_update(void)
 {
+	if (!timer0_expired())
+	{
+		return;
+	}
+
 	static U8 value = 0;
 	static Colour colour = RED;
 	static bool fade = false;
@@ -129,6 +134,8 @@ void rgb_rainbow_update(void)
 			_delay(SOLID_COLOUR_DELAY_US);
 		}
 	}
+
+	PIR0bits.TMR0IF = 0;
 }
 
 void rgb_rainbow_cycle(void)

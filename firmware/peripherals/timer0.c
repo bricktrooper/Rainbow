@@ -22,20 +22,42 @@ enum T0OUTPS
 	T0OUTPS_1  = 0b0000
 };
 
+enum T0CS
+{
+	T0CS_LC1               = 0b111,   // LC1 output
+	T0CS_SOSC              = 0b110,   // SOSC
+	T0CS_MFINTOSC          = 0b101,   // MFINTOSC (500 kHz)
+	T0CS_LFINTOSC          = 0b100,   // LFINTOSC
+	T0CS_HFINTOSC          = 0b011,   // HFINTOSC
+	T0CS_FOSC4             = 0b010,   // FOSC/4
+	T0CS_T0CKIPPS_INVERTED = 0b001,   // T0CKIPPS (Inverted)
+	T0CS_T0CKIPPS_TRUE     = 0b000    // T0CKIPPS (True)
+};
+
 void timer0_initialize(T0CKPS prescaler, U8 period)
 {
 	timer0_enable(false);             // disable timer
 	T0CON0bits.T016BIT = 0;           // 8 b mode
 	T0CON0bits.T0OUTPS = T0OUTPS_1;   // 1:1 output postscaler
-	T0CON1bits.T0CS = 0b010;          // Fosc/4 clock source
+	T0CON1bits.T0CS = T0CS_FOSC4;     // Fosc/4 clock source
 	T0CON1bits.T0ASYNC = 0;           // synchronize input clock to Fosc/4 (max frequency)
 	T0CON1bits.T0CKPS = prescaler;    // 1:1 prescaler
 	TMR0H = period;                   // timer period (8 b mode only)
-	PIE0bits.TMR0IE = 1;              // enable interrupt
+	timer0_interrupt(false);          // disable interrupt
 	PIR0bits.TMR0IF = 0;              // reset interrupt flag (set when TMR0L == TMR0H)
 }
 
 void timer0_enable(bool enable)
 {
 	T0CON0bits.T0EN = enable;
+}
+
+void timer0_interrupt(bool enable)
+{
+	PIE0bits.TMR0IE = enable;
+}
+
+bool timer0_expired(void)
+{
+	return PIR0bits.TMR0IF;
 }
