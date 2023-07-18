@@ -202,9 +202,13 @@ def listen():
 def ping():
 	if request(Opcode.PING, []) == ERROR:
 		return ERROR
-	return listen()
+	if listen() == ERROR:
+		return ERROR
+	return SUCCESS
 
 def rainbow():
 	if request(Opcode.RAINBOW, []) == ERROR:
 		return ERROR
-	return listen()
+	if listen() == ERROR:
+		return ERROR
+	return SUCCESS
