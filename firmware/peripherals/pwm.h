@@ -3,7 +3,7 @@
 
 #include "types.h"
 
-#define PWM_MAX   255
+#define PWM_MAX   UINT8_MAX
 
 enum PWM_Channel
 {

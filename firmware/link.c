@@ -52,6 +52,7 @@ static U8 calculate_checksum(Header * header, void * payload)
 bool link_state_machine(Header * header, void * payload, U8 length)
 {
 	bool ready = false;
+	static U16 retries = UINT16_MAX;
 
 	switch (state)
 	{
@@ -73,9 +74,19 @@ bool link_state_machine(Header * header, void * payload, U8 length)
 
 			led_on();               // visual indicator that a packet was discovered
 			state = STATE_HEADER;   // fall through
+			retries = UINT16_MAX;
 		}
 		case STATE_HEADER:
 		{
+			retries--;
+
+			// reset state machine after retries expire
+			if (retries == 0)
+			{
+				state = STATE_MAGIC;
+				break;
+			}
+
 			U8 const length = sizeof(Header) - sizeof(header->magic);
 
 			if (uart_peek() < length)
@@ -91,9 +102,19 @@ bool link_state_machine(Header * header, void * payload, U8 length)
 			}
 
 			state = STATE_PAYLOAD;   // fall through
+			retries = UINT16_MAX;
 		}
 		case STATE_PAYLOAD:
 		{
+			retries--;
+
+			// reset state machine after retries expire
+			if (retries == 0)
+			{
+				state = STATE_MAGIC;
+				break;
+			}
+
 			if (uart_peek() < header->length)
 			{
 				break;
@@ -110,11 +131,15 @@ bool link_state_machine(Header * header, void * payload, U8 length)
 			The state machine resets here and starts looking for the next magic number.
 			*/
 
-			led_off();
 			ready = true;
 			state = STATE_MAGIC;   // reset state machine
 			break;
 		}
+	}
+
+	if (state == STATE_MAGIC)
+	{
+		led_off();
 	}
 
 	return ready;

@@ -89,7 +89,7 @@ class Header:
 		string = ""
 		string += "%s%-8s%s : 0x%X\n" % (colours.MAGENTA, "magic", colours.RESET, self.magic)
 		string += "%s%-8s%s : 0x%X\n" % (colours.MAGENTA, "opcode", colours.RESET, self.opcode)
-		string += "%s%-8s%s : %u B\n" % (colours.MAGENTA, "length", colours.RESET, self.length)
+		string += "%s%-8s%s : %u\n" % (colours.MAGENTA, "length", colours.RESET, self.length)
 		string += "%s%-8s%s : 0x%X" % (colours.MAGENTA, "checksum", colours.RESET, self.checksum)
 		return string
 
@@ -115,9 +115,9 @@ class Header:
 def calculate_checksum(header, payload):
 	checksum = header.checksum   # cancel out XOR of checksum (A (+) A = 0)
 
-	bytes = header.pack()
+	data = header.pack()
 	for i in range(Header.SIZE):
-		checksum ^= bytes[i]
+		checksum ^= data[i]
 
 	for i in range(header.length):
 		checksum ^= payload[i]
@@ -156,27 +156,40 @@ def request(opcode, payload):
 	header.opcode = opcode
 	header.length = length
 	header.checksum = calculate_checksum(header, payload)
+	log.verbose(f"Request:\n{header}")
 
 	uart.transmit(header.pack())
 	uart.transmit(payload)
 
 def listen():
 	# wait for magic number to be received
+	data = None
+
 	magic = ~Header.MAGIC
-	bytes = None
 	while magic != Header.MAGIC:
-		bytes = uart.receive(Header.MAGIC_SIZE)
-		fields = struct.unpack(Header.MAGIC_FORMAT, bytes)
+		data = uart.receive(Header.MAGIC_SIZE)
+		if len(data) != Header.MAGIC_SIZE:
+			log.error(f"Did not receive magic number")
+			return ERROR
+		fields = struct.unpack(Header.MAGIC_FORMAT, data)
 		magic = fields[0]
 
-	# receive rest of header
-	bytes += uart.receive(Header.SIZE - Header.MAGIC_SIZE)
+	# receive rest of header and combine with magic
+	data += uart.receive(Header.SIZE - Header.MAGIC_SIZE)
+	if len(data) != Header.SIZE:
+		log.error(f"Did not receive header")
+		return ERROR
+
+	# unpack entire header
 	header = Header()
-	header.unpack(bytes)
-	header.print()
+	header.unpack(data)
+	log.verbose(f"Response:\n{header}")
 
 	# receive payload
 	payload = uart.receive(header.length)
+	if len(payload) != header.length:
+		log.error(f"Did not receive payload")
+		return ERROR
 
 	# verify response packet
 	if verify(header, payload) == ERROR:
@@ -185,3 +198,13 @@ def listen():
 
 	log.success(f"Received response packet")
 	return header, payload
+
+def ping():
+	if request(Opcode.PING, []) == ERROR:
+		return ERROR
+	return listen()
+
+def rainbow():
+	if request(Opcode.RAINBOW, []) == ERROR:
+		return ERROR
+	return listen()
