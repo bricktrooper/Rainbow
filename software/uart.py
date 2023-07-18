@@ -43,12 +43,23 @@ def purge():
 
 def transmit(data):
 	global serial
-	serial.write(data)
+	length = serial.write(data)
 	serial.flushOutput()
+	message = f"Transmitted {length}/{len(data)} B"
+	if length < len(data):
+		log.warning(message)
+	else:
+		log.debug(message)
 
 def receive(length):
 	global serial
-	return serial.read(length)
+	data = serial.read(length)
+	message = f"Received {len(data)}/{length} B"
+	if length < len(data):
+		log.warning(message)
+	else:
+		log.debug(message)
+	return data
 
 def dump():
 	global serial
