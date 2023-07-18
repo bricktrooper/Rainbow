@@ -5,43 +5,72 @@ import link
 from cli import Command, ERROR, SUCCESS
 from sys import argv
 
+# ===================== UTILITIES ===================== #
+
+def parse_unsigned(name, string, min, max):
+	value = None
+
+	try:
+		value = int(string)
+	except ValueError:
+		log.error(f"'{name}' must be an integer")
+		return ERROR
+
+	if value < min or value > max:
+		log.error(f"'{name}' must be between {min} and {max}")
+		return ERROR
+
+	return value
+
+# ===================== SUBCOMMANDS ===================== #
+
+MAX_PINGS = 100
+
 def ping(prefix, args):
 	count = 1
 	if len(args) > 0:
-		try:
-			count = int(args.pop(0))
-		except ValueError:
-			log.error(f"Ping count must be an integer")
+		count = parse_unsigned("count", args.pop(0), 0, MAX_PINGS)
+		if count == ERROR:
 			return ERROR
 
-	log.info("PING")
 	uart.connect()
-	result = SUCCESS
-
 	for i in range(count):
-		result |= link.ping()
+		if link.ping() == ERROR:
+			return ERROR
+	uart.disconnect()
+	return SUCCESS
 
+def colour(prefix, args):
+	red = args.pop(0)
+	green = args.pop(0)
+	blue = args.pop(0)
+
+	red = parse_unsigned("red", red, 0, 255)
+	if red == ERROR:
+		return ERROR
+	green = parse_unsigned("green", green, 0, 255)
+	if green == ERROR:
+		return ERROR
+	blue = parse_unsigned("blue", blue, 0, 255)
+	if blue == ERROR:
+		return ERROR
+
+	uart.connect()
+	result = link.colour(red, green, blue)
 	uart.disconnect()
 	return result
 
 def rainbow(prefix, args):
-	speed = None
-	if len(args) > 0:
-		try:
-			speed = int(args.pop(0))
-		except ValueError:
-			log.error(f"Rainbow speed must be an integer")
-			return ERROR
-
-	if speed < 0 or speed > 255:
-		log.error(f"Rainbow speed must be between 0 and 255")
+	speed = parse_unsigned("speed", args.pop(0), 0, 255)
+	if speed == ERROR:
 		return ERROR
 
-	log.info("RAINBOW")
 	uart.connect()
 	result = link.rainbow(speed)
 	uart.disconnect()
 	return result
+
+# ===================== SCRIPT ===================== #
 
 def main():
 	#log.trace(module = True, caller = True)
@@ -51,6 +80,7 @@ def main():
 
 	command = Command(prefix, 1)
 	command.leaf(ping, "ping", "[count]", 0, 1)
+	command.leaf(colour, "colour", "<red> <green> <blue>", 3, 3)
 	command.leaf(rainbow, "rainbow", "<speed>", 1, 1)
 
 	result = command.run(argv)

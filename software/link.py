@@ -99,7 +99,7 @@ class Header:
 	def unpack(self, payload, offset = 0):
 		fields = struct.unpack_from(Header.FORMAT, payload, offset)
 		self.magic = fields[0]
-		self.opcode = fields[1]
+		self.opcode = Opcode(fields[1])
 		self.length = fields[2]
 		self.checksum = fields[3]
 
@@ -153,12 +153,12 @@ def request(opcode, payload):
 
 	header = Header()
 	header.magic = Header.MAGIC
-	header.opcode = opcode
+	header.opcode = Opcode(opcode)
 	header.length = length
 	header.checksum = calculate_checksum(header, payload)
 	header.payload = bytes(payload)
 
-	log.debug(f"REQUEST:\n{header}")
+	log.info(f"{header.opcode.name}:\n{header}")
 	uart.transmit(header.pack() + header.payload)
 
 def listen():
@@ -191,7 +191,7 @@ def listen():
 		return ERROR
 	header.payload = payload
 
-	log.debug(f"RESPONSE:\n{header}")
+	log.info(f"{header.opcode.name}:\n{header}")
 
 	# verify response packet
 	if verify(header, payload) == ERROR:
@@ -201,6 +201,8 @@ def listen():
 	result = Result(struct.unpack("<B", payload)[0])
 	log.success(f"Received response: {result.name}")
 	return header, payload
+
+# ===================== REQUESTS ===================== #
 
 def ping():
 	if request(Opcode.PING, []) == ERROR:
@@ -212,6 +214,15 @@ def ping():
 def rainbow(speed):
 	payload = struct.pack("<B", speed)
 	if request(Opcode.RAINBOW, payload) == ERROR:
+		return ERROR
+	if listen() == ERROR:
+		return ERROR
+	return SUCCESS
+
+def colour(red, green, blue):
+	rgb = RGB(red, green, blue)
+	payload = rgb.pack()
+	if request(Opcode.COLOUR, payload) == ERROR:
 		return ERROR
 	if listen() == ERROR:
 		return ERROR
