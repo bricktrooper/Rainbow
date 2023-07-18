@@ -72,7 +72,7 @@ def rainbow(prefix, args):
 	uart.disconnect()
 	return result
 
-def colour(prefix, args):
+def brightness(prefix, args):
 	red = args.pop(0)
 	green = args.pop(0)
 	blue = args.pop(0)
@@ -102,7 +102,7 @@ def main():
 	command = Command(prefix, 1)
 	command.leaf(ping, "ping", "[count]", 0, 1)
 	command.leaf(colour, "colour", "<red> <green> <blue>", 3, 3)
-	command.leaf(colour, "brightness", "<red> <green> <blue>", 3, 3)
+	command.leaf(brightness, "brightness", "<red> <green> <blue>", 3, 3)
 	command.leaf(rainbow, "rainbow", "<speed>", 1, 1)
 
 	result = command.run(argv)
