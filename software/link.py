@@ -17,9 +17,9 @@ class RGB:
 
 	def __str__(self):
 		string = ""
-		string += "%s%-5s%s : %u\n" % (colours.RED, "red", colours.RESET, self.red)
-		string += "%s%-5s%s : %u\n" % (colours.GREEN, "green", colours.RESET, self.green)
-		string += "%s%-5s%s : %u" % (colours.BLUE, "blue", colours.RESET, self.blue)
+		string += "%s%s%s: %u, " % (colours.RED, "red", colours.RESET, self.red)
+		string += "%s%s%s: %u, " % (colours.GREEN, "green", colours.RESET, self.green)
+		string += "%s%s%s: %u" % (colours.BLUE, "blue", colours.RESET, self.blue)
 		return string
 
 	def print(self):
@@ -125,6 +125,11 @@ def calculate_checksum(header, payload):
 	return checksum
 
 def verify(header, payload):
+	# verify opcode
+	if header.opcode != Opcode.RESPONSE:
+		log.error("Expected opcode '0x%X' but received '0x%X'" % (Opcode.RESPONSE, header.opcode))
+		return ERROR
+
 	# verify checksum
 	checksum = calculate_checksum(header, payload)
 	if header.checksum != checksum:
@@ -136,11 +141,6 @@ def verify(header, payload):
 	length = OPCODES[name]["length"]
 	if header.length != length:
 		log.error("Expected length '0x%X' but received '0x%X'" % (length, header.length))
-		return ERROR
-
-	# verify opcode
-	if header.opcode != Opcode.RESPONSE:
-		log.error("Expected opcode '0x%X' but received '0x%X'" % (Opcode.RESPONSE, header.opcode))
 		return ERROR
 
 	return SUCCESS
@@ -158,7 +158,7 @@ def request(opcode, payload):
 	header.checksum = calculate_checksum(header, payload)
 	header.payload = bytes(payload)
 
-	log.info(f"{header.opcode.name}:\n{header}")
+	log.debug(f"{header.opcode.name}:\n{header}")
 	uart.transmit(header.pack() + header.payload)
 
 def listen():
@@ -191,7 +191,7 @@ def listen():
 		return ERROR
 	header.payload = payload
 
-	log.info(f"{header.opcode.name}:\n{header}")
+	log.debug(f"{header.opcode.name}:\n{header}")
 
 	# verify response packet
 	if verify(header, payload) == ERROR:
@@ -199,12 +199,13 @@ def listen():
 		return ERROR
 
 	result = Result(struct.unpack("<B", payload)[0])
-	log.success(f"Received response: {result.name}")
+	log.success(f"Response: {result.name}")
 	return header, payload
 
 # ===================== REQUESTS ===================== #
 
 def ping():
+	log.info("PING")
 	if request(Opcode.PING, []) == ERROR:
 		return ERROR
 	if listen() == ERROR:
@@ -212,6 +213,7 @@ def ping():
 	return SUCCESS
 
 def rainbow(speed):
+	log.info(f"RAINBOW {colours.MAGENTA}speed{colours.RESET}: {speed}")
 	payload = struct.pack("<B", speed)
 	if request(Opcode.RAINBOW, payload) == ERROR:
 		return ERROR
@@ -221,8 +223,19 @@ def rainbow(speed):
 
 def colour(red, green, blue):
 	rgb = RGB(red, green, blue)
+	log.info(f"COLOUR {rgb}")
 	payload = rgb.pack()
 	if request(Opcode.COLOUR, payload) == ERROR:
+		return ERROR
+	if listen() == ERROR:
+		return ERROR
+	return SUCCESS
+
+def brightness(red, green, blue):
+	rgb = RGB(red, green, blue)
+	log.info(f"BRIGHTNESS {rgb}")
+	payload = rgb.pack()
+	if request(Opcode.BRIGHTNESS, payload) == ERROR:
 		return ERROR
 	if listen() == ERROR:
 		return ERROR
