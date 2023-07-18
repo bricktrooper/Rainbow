@@ -17,8 +17,8 @@ static Queue tx_queue;
 static U8 rx_buffer [RX_BUFFER_SIZE];
 static U8 tx_buffer [TX_BUFFER_SIZE];
 
-static bool non_blocking_rx = false;
-static bool non_blocking_tx = false;
+static bool rx_interrupt = false;
+static bool tx_interrupt = false;
 
 void uart_initialize(void)
 {
@@ -49,18 +49,18 @@ void uart_initialize(void)
 	TRISCbits.TRISC4 = OUTPUT;    // configure RC4 as output
 	ANSELCbits.ANSC4 = DIGITAL;   // configure RC4 as digital
 
-	uart_non_blocking(true, true);                            // enable non-blocking mode for RX and TX
+	uart_interrupt(true, true);                               // enable non-blocking mode for RX and TX (uses interrupts)
 	queue_initialize(&rx_queue, rx_buffer, RX_BUFFER_SIZE);   // initialize RX queue (used for non-blocking mode)
 	queue_initialize(&tx_queue, tx_buffer, TX_BUFFER_SIZE);   // initialize TX queue (used for non-blocking mode)
 }
 
-void uart_non_blocking(bool rx, bool tx)
+void uart_interrupt(bool rx, bool tx)
 {
 	PIE3bits.RC1IE = rx;
 	PIE3bits.TX1IE = tx;
 
-	non_blocking_rx = rx;
-	non_blocking_tx = tx;
+	rx_interrupt = rx;
+	tx_interrupt = tx;
 }
 
 static void clear_rx_overrun(void)
@@ -144,7 +144,7 @@ void uart_pop(void * data, U8 length)
 
 void uart_read(void * data, U8 length)
 {
-	if (non_blocking_rx)
+	if (rx_interrupt)
 	{
 		uart_pop(data, length);   // non-blocking
 	}
@@ -156,7 +156,7 @@ void uart_read(void * data, U8 length)
 
 void uart_write(void * data, U8 length)
 {
-	if (non_blocking_tx)
+	if (tx_interrupt)
 	{
 		uart_push(data, length);   // non-blocking
 	}
