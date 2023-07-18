@@ -24,10 +24,13 @@ void led_off(void)
 	LED = 0;
 }
 
-void led_blink(void)
+void led_blink(U8 count)
 {
-	led_on();
-	_delay(BLINK_DELAY_US);
-	led_off();
-	_delay(BLINK_DELAY_US);
+	for (U8 i = 0; i < count; i++)
+	{
+		led_on();
+		_delay(BLINK_DELAY_US);
+		led_off();
+		_delay(BLINK_DELAY_US);
+	}
 }
