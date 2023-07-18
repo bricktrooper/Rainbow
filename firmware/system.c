@@ -26,12 +26,9 @@ static char * abort_reasons [ABORT_count] = {
 	"PAYLOAD_OVERFLOW",
 };
 
-static void startup_indicator(void)
+static inline void startup_indicator(void)
 {
-	for (int i = 0; i < LED_BLINKS; i++)
-	{
-		led_blink();
-	}
+	led_blink(3);
 }
 
 void system_initialize(void)
@@ -65,7 +62,7 @@ void system_abort(Abort abort, char const * caller)
 {
 	while (1)
 	{
-		led_blink();   // blink LED
+		led_blink(1);   // blink LED
 
 		// dump abort reason to UART
 		if (abort < ABORT_count)
