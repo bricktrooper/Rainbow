@@ -68,7 +68,7 @@ bool link_state_machine(Header * header, void * payload, U8 length)
 		{
 			U8 const length = sizeof(header->magic);
 
-			if (uart_peek() < length)
+			if (uart_peek_rx() < length)
 			{
 				break;
 			}
@@ -97,7 +97,7 @@ bool link_state_machine(Header * header, void * payload, U8 length)
 
 			U8 const length = sizeof(Header) - sizeof(header->magic);
 
-			if (uart_peek() < length)
+			if (uart_peek_rx() < length)
 			{
 				break;
 			}
@@ -123,7 +123,7 @@ bool link_state_machine(Header * header, void * payload, U8 length)
 				break;
 			}
 
-			if (uart_peek() < header->length)
+			if (uart_peek_rx() < header->length)
 			{
 				break;
 			}

@@ -35,6 +35,13 @@ static Result service(Opcode opcode, void * payload)
 			rgb_rainbow(true);
 			return RESULT_SUCCESS;
 		}
+		case OPCODE_REBOOT:
+		{
+			link_respond(RESULT_SUCCESS);   // send last response before reboot
+			while (uart_peek_tx() > 0);     // wait for response packet to be transmitted
+			system_reboot();                // trigger reboot
+			while (1);                      // do nothing until reboot happens
+		}
 		default:
 		{
 			return RESULT_ERROR_OPCODE;

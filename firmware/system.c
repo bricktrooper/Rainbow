@@ -81,7 +81,7 @@ void system_abort(Abort abort, char const * caller)
 	}
 }
 
-//void system_reboot(void)
-//{
-//	WDTCONbits.SWDTEN = 1;   // enable watchdog timer to force reset
-//}
+void system_reboot(void)
+{
+	WDTCON0bits.SWDTEN = 1;   // enable watchdog timer to force reset
+}

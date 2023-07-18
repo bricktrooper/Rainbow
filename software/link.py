@@ -12,6 +12,7 @@ class Opcode(IntEnum):
 	COLOUR     = 0x01
 	BRIGHTNESS = 0x02
 	RAINBOW    = 0x03
+	REBOOT     = 0x04
 	RESPONSE   = 0xFF
 
 class Result(IntEnum):
@@ -20,12 +21,13 @@ class Result(IntEnum):
 	ERROR_OPCODE         = 0x02
 	ERROR_PAYLOAD_LENGTH = 0x03
 
-OPCODES = {
-	"PING":         { "opcode": Opcode.PING,       "length": 0},
-	"COLOUR":       { "opcode": Opcode.COLOUR,     "length": RGB.SIZE},
-	"BRIGHTNESS":   { "opcode": Opcode.BRIGHTNESS, "length": RGB.SIZE},
-	"RAINBOW":      { "opcode": Opcode.RAINBOW,    "length": 1},
-	"RESPONSE":     { "opcode": Opcode.RESPONSE,   "length": 1}
+DATA_LENGTHS = {
+	"PING":       0,
+	"COLOUR":     RGB.SIZE,
+	"BRIGHTNESS": RGB.SIZE,
+	"RAINBOW":    1,
+	"REBOOT":     0,
+	"RESPONSE":   1,
 }
 
 class Header:
@@ -106,7 +108,7 @@ def verify(header, payload):
 
 	# verify payload length
 	name = Opcode(header.opcode).name
-	length = OPCODES[name]["length"]
+	length = DATA_LENGTHS[name]
 	if header.length != length:
 		log.error("Expected length '0x%X' but received '0x%X'" % (length, header.length))
 		return ERROR
@@ -114,7 +116,7 @@ def verify(header, payload):
 	return SUCCESS
 
 def request(opcode, payload):
-	length = OPCODES[opcode.name]["length"]
+	length = DATA_LENGTHS[opcode.name]
 	if length != len(payload):
 		log.error(f"Opcode '{opcode.name}' requires length '{length}' but found '{len(payload)}'")
 		return ERROR
@@ -204,6 +206,13 @@ def brightness(red, green, blue):
 	log.info(f"BRIGHTNESS {rgb}")
 	payload = rgb.pack()
 	if request(Opcode.BRIGHTNESS, payload) == ERROR:
+		return ERROR
+	if listen() == ERROR:
+		return ERROR
+	return SUCCESS
+
+def reboot():
+	if request(Opcode.REBOOT, []) == ERROR:
 		return ERROR
 	if listen() == ERROR:
 		return ERROR

@@ -92,6 +92,12 @@ def brightness(prefix, args):
 	uart.disconnect()
 	return result
 
+def reboot(prefix, args):
+	uart.connect()
+	result = link.reboot()
+	uart.disconnect()
+	return result
+
 # ===================== SCRIPT ===================== #
 
 def main():
@@ -104,6 +110,7 @@ def main():
 	command.leaf(colour, "colour", "<red> <green> <blue>", 3, 3)
 	command.leaf(brightness, "brightness", "<red> <green> <blue>", 3, 3)
 	command.leaf(rainbow, "rainbow", "<speed>", 1, 1)
+	command.leaf(reboot, "reboot", "", 0, 0)
 
 	result = command.run(argv)
 	exit(result)

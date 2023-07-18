@@ -166,9 +166,14 @@ void uart_write(void * data, U8 length)
 	}
 }
 
-U8 uart_peek(void)
+U8 uart_peek_rx(void)
 {
 	return rx_queue.length;
+}
+
+U8 uart_peek_tx(void)
+{
+	return tx_queue.length;
 }
 
 void putch(char byte)

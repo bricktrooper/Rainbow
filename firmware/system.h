@@ -25,6 +25,6 @@ enum Abort
 
 void system_initialize(void);
 void system_abort(Abort abort, char const * caller);
-//void system_reboot(void);
+void system_reboot(void);
 
 #endif /* SYSTEM_H */
