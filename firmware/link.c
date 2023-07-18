@@ -6,6 +6,8 @@
 
 #define MAGIC   0xCE23
 
+#define STATE_MACHINE_RETRIES   500
+
 typedef enum State State;
 
 enum State
@@ -52,7 +54,7 @@ static U8 calculate_checksum(Header * header, void * payload)
 bool link_state_machine(Header * header, void * payload, U8 length)
 {
 	bool ready = false;
-	static U16 retries = UINT16_MAX;
+	static U16 retries = STATE_MACHINE_RETRIES;
 
 	switch (state)
 	{

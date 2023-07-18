@@ -99,7 +99,15 @@ void rgb_rainbow(bool enable)
 
 void rgb_rainbow_speed(U8 speed)
 {
-	timer0_period(UINT8_MAX - speed);
+	U8 period = UINT8_MAX - speed;
+
+	// period == 0 doesn't work for some reason, so 1 is the fastest
+	if (period == 0)
+	{
+		period = 1;
+	}
+
+	timer0_period(period);
 }
 
 void rgb_rainbow_update(void)
@@ -125,7 +133,6 @@ void rgb_rainbow_update(void)
 		{
 			colour = (colour + 1) % 3;   // cycle through red, green, and blue
 			fade = false;
-			_delay(SOLID_COLOUR_DELAY_US);
 		}
 	}
 	else
@@ -138,7 +145,6 @@ void rgb_rainbow_update(void)
 		{
 			colour = (colour + 1) % 3;   // cycle through red, green, and blue
 			fade = true;
-			_delay(SOLID_COLOUR_DELAY_US);
 		}
 	}
 

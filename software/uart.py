@@ -49,11 +49,6 @@ def transmit(data):
 def receive(length):
 	global serial
 	return serial.read(length)
-	#data = data()
-	#while len(data) < length:
-	#	data += serial.read(length)
-	#	log.verbose(f"Received {len(data)}/{length} B from serial port")
-	#return data
 
 def dump():
 	global serial

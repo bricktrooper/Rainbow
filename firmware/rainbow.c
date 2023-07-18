@@ -30,6 +30,7 @@ static Result service(Opcode opcode, void * payload)
 		case OPCODE_RAINBOW:
 		{
 			U8 speed = *(U8 *)payload;
+			rgb_rainbow(false);
 			rgb_rainbow_speed(speed);
 			rgb_rainbow(true);
 			return RESULT_SUCCESS;
@@ -44,7 +45,7 @@ static Result service(Opcode opcode, void * payload)
 void main(void)
 {
 	system_initialize();
-	rgb_brightness(255, 48, 255);
+	rgb_brightness(255, 48, 200);
 
 	while (1)
 	{

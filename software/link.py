@@ -56,16 +56,9 @@ OPCODES = {
 	"PING":         { "opcode": Opcode.PING,       "length": 0},
 	"COLOUR":       { "opcode": Opcode.COLOUR,     "length": RGB.SIZE},
 	"BRIGHTNESS":   { "opcode": Opcode.BRIGHTNESS, "length": RGB.SIZE},
-	"RAINBOW":      { "opcode": Opcode.RAINBOW,    "length": 0},
+	"RAINBOW":      { "opcode": Opcode.RAINBOW,    "length": 1},
 	"RESPONSE":     { "opcode": Opcode.RESPONSE,   "length": 1}
 }
-
-def opcode_name(opcode):
-	for i in OPCODES:
-		if OPCODES[i]["opcode"] == opcode:
-			return i
-	log.error("No such opcode '0x%X'" % (opcode))
-	return ERROR
 
 class Header:
 	FORMAT = "<HBBB"   # little endian
@@ -80,6 +73,7 @@ class Header:
 		self.opcode = opcode
 		self.length = length
 		self.checksum = checksum
+		self.payload = []
 
 		if length is not None and length > Header.MAX_PAYLOAD_LENGTH:
 			log.error(f"Payload length cannot exceed 255")
@@ -90,7 +84,13 @@ class Header:
 		string += "%s%-8s%s : 0x%X\n" % (colours.MAGENTA, "magic", colours.RESET, self.magic)
 		string += "%s%-8s%s : 0x%X\n" % (colours.MAGENTA, "opcode", colours.RESET, self.opcode)
 		string += "%s%-8s%s : %u\n" % (colours.MAGENTA, "length", colours.RESET, self.length)
-		string += "%s%-8s%s : 0x%X" % (colours.MAGENTA, "checksum", colours.RESET, self.checksum)
+		string += "%s%-8s%s : 0x%X\n" % (colours.MAGENTA, "checksum", colours.RESET, self.checksum)
+
+		payload = []
+		for i in self.payload:
+			payload.append(hex(i))
+
+		string += "%s%-8s%s : %s" % (colours.MAGENTA, "payload", colours.RESET, str(payload))
 		return string
 
 	def print(self):
@@ -132,7 +132,8 @@ def verify(header, payload):
 		return ERROR
 
 	# verify payload length
-	length = OPCODES[opcode_name(header.opcode)]["length"]
+	name = Opcode(header.opcode).name
+	length = OPCODES[name]["length"]
 	if header.length != length:
 		log.error("Expected length '0x%X' but received '0x%X'" % (length, header.length))
 		return ERROR
@@ -145,21 +146,20 @@ def verify(header, payload):
 	return SUCCESS
 
 def request(opcode, payload):
-	name = opcode_name(opcode)
-	length = OPCODES[name]["length"]
+	length = OPCODES[opcode.name]["length"]
 	if length != len(payload):
-		log.error(f"Opcode '{name}' requires length '{length}' but found '{len(payload)}'")
+		log.error(f"Opcode '{opcode.name}' requires length '{length}' but found '{len(payload)}'")
 		return ERROR
-	print(opcode.name)
+
 	header = Header()
 	header.magic = Header.MAGIC
 	header.opcode = opcode
 	header.length = length
 	header.checksum = calculate_checksum(header, payload)
-	log.debug(f"REQUEST:\n{header}")
+	header.payload = bytes(payload)
 
-	uart.transmit(header.pack())
-	uart.transmit(bytearray(payload))
+	log.debug(f"REQUEST:\n{header}")
+	uart.transmit(header.pack() + header.payload)
 
 def listen():
 	# wait for magic number to be received
@@ -183,13 +183,15 @@ def listen():
 	# unpack entire header
 	header = Header()
 	header.unpack(data)
-	log.debug(f"RESPONSE:\n{header}")
 
 	# receive payload
 	payload = uart.receive(header.length)
 	if len(payload) != header.length:
 		log.error(f"Did not receive payload")
 		return ERROR
+	header.payload = payload
+
+	log.debug(f"RESPONSE:\n{header}")
 
 	# verify response packet
 	if verify(header, payload) == ERROR:
@@ -208,7 +210,8 @@ def ping():
 	return SUCCESS
 
 def rainbow(speed):
-	if request(Opcode.RAINBOW, []) == ERROR:
+	payload = struct.pack("<B", speed)
+	if request(Opcode.RAINBOW, payload) == ERROR:
 		return ERROR
 	if listen() == ERROR:
 		return ERROR
