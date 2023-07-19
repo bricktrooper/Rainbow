@@ -52,13 +52,12 @@ static Result service(Opcode opcode, void * payload)
 void main(void)
 {
 	system_initialize();
-	rgb_brightness(255, 48, 200);
 
 	while (1)
 	{
 		Header header;
 		U8 payload [4];
-		bool ready = link_state_machine(&header, payload, sizeof(payload));
+		bool ready = link_listen(&header, payload, sizeof(payload));   // run RX state machine
 
 		if (ready)
 		{

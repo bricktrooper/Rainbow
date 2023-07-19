@@ -7,8 +7,10 @@
 
 typedef enum T0CKPS T0CKPS;
 
-/* Timer 0 prescaler.
- * Used to prescale clock input. */
+/*
+Timer 0 prescaler.
+Used to prescale clock input.
+*/
 enum T0CKPS
 {
 	T0CKPS_32768 = 0b1111,   // 1:32768
@@ -29,10 +31,10 @@ enum T0CKPS
 	T0CKPS_1     = 0b0000    // 1:1
 };
 
-void timer0_initialize(T0CKPS prescaler, U8 period);
-void timer0_enable(bool enable);
-void timer0_interrupt(bool enable);
-bool timer0_expired(void);
-void timer0_period(U8 period);
+void timer0_initialize(T0CKPS prescaler, U8 period);   // initialize timer 0
+void timer0_enable(bool enable);                       // enable/disable timer 0
+void timer0_interrupt(bool enable);                    // enable/disable timer 0 interrupt
+bool timer0_expired(void);                             // check if timer 0 expired
+void timer0_period(U8 period);                         // set timer 0 period
 
 #endif /* TIMER0_H */

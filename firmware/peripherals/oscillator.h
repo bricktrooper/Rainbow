@@ -15,7 +15,7 @@ enum HFFRQ
 	HFFRQ_1MHZ     = 0b000
 };
 
-void oscillator_initialize(void);
-void oscillator_frequency(HFFRQ frequency);
+void oscillator_initialize(void);             // initialize high-frequency internal oscillator
+void oscillator_frequency(HFFRQ frequency);   // set oscillator frequency
 
 #endif /* OSCILLATOR_H */

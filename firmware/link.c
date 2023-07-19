@@ -57,7 +57,7 @@ static U8 calculate_checksum(Header * header, void * payload)
 	return checksum;
 }
 
-bool link_state_machine(Header * header, void * payload, U8 length)
+bool link_listen(Header * header, void * payload, U8 length)
 {
 	bool ready = false;
 	static U16 retries = STATE_MACHINE_RETRIES;
@@ -158,7 +158,7 @@ bool link_state_machine(Header * header, void * payload, U8 length)
 	return ready;
 }
 
-Result link_listen(Header * header, void * payload, U8 length)
+Result link_listen_blocking(Header * header, void * payload, U8 length)
 {
 	// wait for magic number to be received
 	do

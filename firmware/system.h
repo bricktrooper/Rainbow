@@ -23,8 +23,8 @@ enum Abort
 	ABORT_count,
 };
 
-void system_initialize(void);
-void system_abort(Abort abort, char const * caller);
-void system_reboot(void);
+void system_initialize(void);                          // intialize microcontroller
+void system_abort(Abort abort, char const * caller);   // abort program and enter error state
+void system_reboot(void);                              // reboot microcontroller
 
 #endif /* SYSTEM_H */

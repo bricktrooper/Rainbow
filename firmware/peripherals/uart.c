@@ -28,16 +28,16 @@ void uart_initialize(void)
 	TX1STAbits.BRGH = 1;    // high baud rate
 	TX1STAbits.TXEN = 1;    // enable transmitter
 
-	RC1STAbits.RX9 = 0;    // 8 b reception
-	RC1STAbits.CREN = 1;   // continuous reception
-	RC1STAbits.SPEN = 1;   // enable serial port
+	RC1STAbits.RX9 = 0;     // 8 b reception
+	RC1STAbits.CREN = 1;    // continuous reception
+	RC1STAbits.SPEN = 1;    // enable serial port
 
 	BAUD1CONbits.SCKP = 0;    // idle TX high
 	BAUD1CONbits.BRG16 = 1;   // 16 b baud rate generator
 	BAUD1CONbits.WUE = 0;     // disable wake-up
 	BAUD1CONbits.ABDEN = 0;   // disable auto-baud detect
 
-	// 115900 bps @ 32 MHz (~115200 bps)
+	// set baud rate to 115900 bps @ 32 MHz (~115200 bps)
 	SP1BRGH = 0;
 	SP1BRGL = 68;
 
@@ -119,7 +119,8 @@ void uart_push(void * data, U8 length)
 		}
 	}
 
-	PIE3bits.TX1IE = 1;   // enable TX interrupt since there is new data to send
+	// enable TX interrupt since there is new data to send
+	PIE3bits.TX1IE = 1;
 }
 
 void uart_pop(void * data, U8 length)
@@ -208,12 +209,16 @@ void uart_tx_service(void)
 {
 
 	U8 byte;
-	bool result = queue_pop(&tx_queue, &byte);   // pop byte from TX queue
+
+	// pop byte from TX queue
+	bool result = queue_pop(&tx_queue, &byte);
 
 	if (result)
 	{
-		TX1REG = byte;   // load the byte for transmission
+		// load the byte for transmission
+		TX1REG = byte;
 	}
 
-	PIE3bits.TX1IE = result;  // disable TX interrupt if there is no more data to send
+	// disable TX interrupt if there is no more data to send
+	PIE3bits.TX1IE = result;
 }

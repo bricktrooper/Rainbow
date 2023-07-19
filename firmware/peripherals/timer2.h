@@ -7,8 +7,10 @@
 
 typedef enum T2CKPS T2CKPS;
 
-/* Timer 2 prescaler.
- * Used to prescale clock input. */
+/*
+Timer 2 prescaler.
+Used to prescale clock input.
+*/
 enum T2CKPS
 {
 	T2CKPS_128 = 0b111,   // 1:128
@@ -21,8 +23,8 @@ enum T2CKPS
 	T2CKPS_1   = 0b000    // 1:1
 };
 
-void timer2_initialize(T2CKPS prescaler, U8 period);
-void timer2_enable(bool enable);
-void timer2_interrupt(bool enable);
+void timer2_initialize(T2CKPS prescaler, U8 period);   // initialize timer 2
+void timer2_enable(bool enable);                       // enable/disable timer 2
+void timer2_interrupt(bool enable);                    // enable/disable timer 2 interrupt
 
 #endif /* TIMER2_H */

@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 
+#define NEWLINE   "\r\n"
+
 #include "types.h"
 
 void uart_initialize(void);                         // initialize UART

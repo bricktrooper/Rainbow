@@ -13,10 +13,6 @@
 #include "pwm.h"
 #include "rgb.h"
 
-#define LED_DELAY_US   1000000
-#define LED_BLINKS     3
-
-#define NEWLINE   "\r\n"
 #define COLON     ": "
 
 static char * abort_reasons [ABORT_count] = {
@@ -83,5 +79,6 @@ void system_abort(Abort abort, char const * caller)
 
 void system_reboot(void)
 {
-	WDTCON0bits.SWDTEN = 1;   // enable watchdog timer to force reset
+	// enable watchdog timer to force reset
+	WDTCON0bits.SWDTEN = 1;
 }

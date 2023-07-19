@@ -3,9 +3,9 @@
 
 #include "types.h"
 
-void led_initialize(void);
-void led_on(void);
-void led_off(void);
-void led_blink(U8 count);
+void led_initialize(void);   // initialize LED
+void led_on(void);           // turn the LED on
+void led_off(void);          // turn the LED off
+void led_blink(U8 count);    // blink the LED a certain number of times
 
 #endif /* LED_H */

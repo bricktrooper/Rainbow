@@ -47,9 +47,9 @@ struct RGB
 	U8 blue;
 } __attribute__((packed));
 
-Result link_listen(Header * header, void * payload, U8 length);
+bool link_listen(Header * header, void * payload, U8 length);
+Result link_listen_blocking(Header * header, void * payload, U8 length);
 void link_respond(Result result);
 Result link_verify(Header * header, void * payload);
-bool link_state_machine(Header * header, void * payload, U8 length);
 
 #endif /* LINK_H */
