@@ -156,20 +156,74 @@ def cli_off(prefix, args):
 	uart.disconnect()
 	return result
 
+SUBCOMMANDS = {
+	"ping":
+	{
+		"handler":     cli_ping,
+		"usage":       "[count]",
+		"min":         0,
+		"max":         1,
+		"description": "Ping the controller"
+	},
+	"colour":
+	{
+		"handler":     cli_colour,
+		"usage":       "<red> <green> <blue>",
+		"min":         3,
+		"max":         3,
+		"description": "Set the RGB colour"
+	},
+	"brightness":
+	{
+		"handler":     cli_brightness,
+		"usage":       "<red> <green> <blue>",
+		"min":         3,
+		"max":         3,
+		"description": "Set the maximum brightness for each RGB channel"
+	},
+	"cycle":
+	{
+		"handler":     cli_cycle,
+		"usage":       "<speed>",
+		"min":         1,
+		"max":         1,
+		"description": "Transition through all colours repeatedly"
+	},
+	"reboot":
+	{
+		"handler":     cli_reboot,
+		"usage":       "",
+		"min":         0,
+		"max":         0,
+		"description": "Reboot the controller"
+	},
+	"off":
+	{
+		"handler":     cli_off,
+		"usage":       "",
+		"min":         0,
+		"max":         0,
+		"description": "Turn off all lights"
+	},
+}
+
 # ===================== SCRIPT ===================== #
 
 def main():
 	log.suppress(log.Level.DEBUG)
 	program = basename(argv.pop(0))
 	prefix = f"{program}"
+	command = Command("rainbow", 0)
 
-	command = Command("rainbow", 1)
-	command.leaf(cli_ping,       "ping",       "[count]",              0, 1, "Ping the controller")
-	command.leaf(cli_colour,     "colour",     "<red> <green> <blue>", 3, 3, "Set the RGB colour")
-	command.leaf(cli_brightness, "brightness", "<red> <green> <blue>", 3, 3, "Set the maximum brightness for each RGB channel")
-	command.leaf(cli_cycle,      "cycle",      "<speed>",              1, 1, "Transition through all colours repeatedly")
-	command.leaf(cli_reboot,     "reboot",     "",                     0, 0, "Reboot the controller")
-	command.leaf(cli_off,        "off",        "",                     0, 0, "Turn off all lights")
+	for name in SUBCOMMANDS:
+		command.leaf(
+			name = name,
+			handler = SUBCOMMANDS[name]["handler"],
+			usage = SUBCOMMANDS[name]["usage"],
+			min = SUBCOMMANDS[name]["min"],
+			max = SUBCOMMANDS[name]["max"],
+			description = SUBCOMMANDS[name]["description"]
+		)
 
 	result = command.run(argv)
 	exit(result)
