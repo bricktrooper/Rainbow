@@ -150,6 +150,12 @@ def cli_reboot(prefix, args):
 	uart.disconnect()
 	return result
 
+def cli_off(prefix, args):
+	uart.connect()
+	result = colour(0, 0, 0)
+	uart.disconnect()
+	return result
+
 # ===================== SCRIPT ===================== #
 
 def main():
@@ -163,6 +169,7 @@ def main():
 	command.leaf(cli_brightness, "brightness", "<red> <green> <blue>", 3, 3, "Set the maximum brightness for each RGB channel")
 	command.leaf(cli_rainbow,    "rainbow",    "<speed>",              1, 1, "Cycle through the colours in a rainbow")
 	command.leaf(cli_reboot,     "reboot",     "",                     0, 0, "Reboot the controller")
+	command.leaf(cli_off,        "off",        "",                     0, 0, "Turn off all lights")
 
 	result = command.run(argv)
 	exit(result)
