@@ -16,7 +16,7 @@ static Result service(Opcode opcode, void * payload)
 		}
 		case OPCODE_COLOUR:
 		{
-			rgb_rainbow(false);
+			rgb_cycle(false);
 			RGB * colour = payload;
 			rgb_colour(colour->red, colour->green, colour->blue);
 			return RESULT_SUCCESS;
@@ -27,12 +27,12 @@ static Result service(Opcode opcode, void * payload)
 			rgb_brightness(brightness->red, brightness->green, brightness->blue);
 			return RESULT_SUCCESS;
 		}
-		case OPCODE_RAINBOW:
+		case OPCODE_CYCLE:
 		{
 			U8 speed = *(U8 *)payload;
-			rgb_rainbow(false);
-			rgb_rainbow_speed(speed);
-			rgb_rainbow(true);
+			rgb_cycle(false);
+			rgb_cycle_speed(speed);
+			rgb_cycle(true);
 			return RESULT_SUCCESS;
 		}
 		case OPCODE_REBOOT:
@@ -71,7 +71,7 @@ void main(void)
 			link_respond(result);
 		}
 
-		rgb_rainbow_update();
+		rgb_cycle_update();
 	}
 }
 

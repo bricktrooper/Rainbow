@@ -17,13 +17,13 @@
 #define DEFAULT_GREEN_BRIGHTNESS   PWM_MAX
 #define DEFAULT_BLUE_BRIGHTNESS    PWM_MAX
 
-#define DEFAULT_RAINBOW_PERIOD   32
+#define DEFAULT_CYCLE_PERIOD   32
 
 static U8 red_brightness = DEFAULT_RED_BRIGHTNESS;
 static U8 green_brightness = DEFAULT_GREEN_BRIGHTNESS;
 static U8 blue_brightness = DEFAULT_BLUE_BRIGHTNESS;
 
-static U8 rainbow_period = DEFAULT_RAINBOW_PERIOD;
+static U8 cycle_period = DEFAULT_CYCLE_PERIOD;
 
 static inline PWM_Channel get_pwm_channel(RGB_Channel channel)
 {
@@ -49,7 +49,7 @@ void rgb_initialize()
 {
 	rgb_off();
 	rgb_brightness(red_brightness, green_brightness, blue_brightness);
-	timer0_initialize(T0CKPS_1024, rainbow_period);   // timer settings for rainbow
+	timer0_initialize(T0CKPS_1024, cycle_period);   // timer settings for cycle
 }
 
 void rgb_set(RGB_Channel channel, U8 value)
@@ -88,7 +88,7 @@ void rgb_colour(U8 red, U8 green, U8 blue)
 void rgb_off(void)
 {
 	rgb_colour(0, 0, 0);
-	rgb_rainbow(false);
+	rgb_cycle(false);
 }
 
 void rgb_brightness(U8 red, U8 green, U8 blue)
@@ -98,12 +98,12 @@ void rgb_brightness(U8 red, U8 green, U8 blue)
 	blue_brightness = blue;
 }
 
-void rgb_rainbow(bool enable)
+void rgb_cycle(bool enable)
 {
 	timer0_enable(enable);
 }
 
-void rgb_rainbow_speed(U8 speed)
+void rgb_cycle_speed(U8 speed)
 {
 	U8 period = UINT8_MAX - speed;
 
@@ -116,7 +116,7 @@ void rgb_rainbow_speed(U8 speed)
 	timer0_period(period);
 }
 
-void rgb_rainbow_update(void)
+void rgb_cycle_update(void)
 {
 	if (!timer0_expired())
 	{
@@ -157,10 +157,10 @@ void rgb_rainbow_update(void)
 	PIR0bits.TMR0IF = 0;
 }
 
-void rgb_rainbow_cycle(void)
+void rgb_single_cycle(void)
 {
 	for (int i = 0; i < 256 * 6; i++)
 	{
-		rgb_rainbow_update();
+		rgb_cycle_update();
 	}
 }

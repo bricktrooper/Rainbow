@@ -17,7 +17,7 @@ enum Opcode
 	OPCODE_PING       = 0x00,
 	OPCODE_COLOUR     = 0x01,
 	OPCODE_BRIGHTNESS = 0x02,
-	OPCODE_RAINBOW    = 0x03,
+	OPCODE_CYCLE      = 0x03,
 	OPCODE_REBOOT     = 0x04,
 
 	OPCODE_count,

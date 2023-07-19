@@ -39,10 +39,10 @@ def ping():
 		return ERROR
 	return SUCCESS
 
-def rainbow(speed):
-	log.info(f"RAINBOW {colours.YELLOW}speed{colours.RESET}: {speed}")
+def cycle(speed):
+	log.info(f"CYCLE {colours.YELLOW}speed{colours.RESET}: {speed}")
 	payload = struct.pack("<B", speed)
-	if link.request(Opcode.RAINBOW, payload) == ERROR:
+	if link.request(Opcode.CYCLE, payload) == ERROR:
 		return ERROR
 	if link.listen() == ERROR:
 		return ERROR
@@ -114,13 +114,13 @@ def cli_colour(prefix, args):
 	uart.disconnect()
 	return result
 
-def cli_rainbow(prefix, args):
+def cli_cycle(prefix, args):
 	speed = parse_unsigned("speed", args.pop(0), 0, 255)
 	if speed == ERROR:
 		return ERROR
 
 	uart.connect()
-	result = rainbow(speed)
+	result = cycle(speed)
 	uart.disconnect()
 	return result
 
@@ -167,7 +167,7 @@ def main():
 	command.leaf(cli_ping,       "ping",       "[count]",              0, 1, "Ping the controller")
 	command.leaf(cli_colour,     "colour",     "<red> <green> <blue>", 3, 3, "Set the RGB colour")
 	command.leaf(cli_brightness, "brightness", "<red> <green> <blue>", 3, 3, "Set the maximum brightness for each RGB channel")
-	command.leaf(cli_rainbow,    "rainbow",    "<speed>",              1, 1, "Cycle through the colours in a rainbow")
+	command.leaf(cli_cycle,      "cycle",      "<speed>",              1, 1, "Transition through all colours repeatedly")
 	command.leaf(cli_reboot,     "reboot",     "",                     0, 0, "Reboot the controller")
 	command.leaf(cli_off,        "off",        "",                     0, 0, "Turn off all lights")
 

@@ -11,7 +11,7 @@ class Opcode(IntEnum):
 	PING       = 0x00
 	COLOUR     = 0x01
 	BRIGHTNESS = 0x02
-	RAINBOW    = 0x03
+	CYCLE      = 0x03
 	REBOOT     = 0x04
 	RESPONSE   = 0xFF
 
@@ -25,7 +25,7 @@ DATA_LENGTHS = {
 	"PING":       0,
 	"COLOUR":     RGB.SIZE,
 	"BRIGHTNESS": RGB.SIZE,
-	"RAINBOW":    1,
+	"CYCLE":      1,
 	"REBOOT":     0,
 	"RESPONSE":   1,
 }
