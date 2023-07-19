@@ -213,7 +213,7 @@ def main():
 	log.suppress(log.Level.DEBUG)
 	program = basename(argv.pop(0))
 	prefix = f"{program}"
-	command = Command("rainbow", 0)
+	command = Command(prefix, 0)
 
 	for name in SUBCOMMANDS:
 		command.leaf(
