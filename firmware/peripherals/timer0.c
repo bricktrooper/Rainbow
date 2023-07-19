@@ -19,7 +19,7 @@ enum T0OUTPS
 	T0OUTPS_4  = 0b0011,
 	T0OUTPS_3  = 0b0010,
 	T0OUTPS_2  = 0b0001,
-	T0OUTPS_1  = 0b0000
+	T0OUTPS_1  = 0b0000,
 };
 
 enum T0CS
@@ -31,7 +31,7 @@ enum T0CS
 	T0CS_HFINTOSC          = 0b011,   // HFINTOSC
 	T0CS_FOSC4             = 0b010,   // FOSC/4
 	T0CS_T0CKIPPS_INVERTED = 0b001,   // T0CKIPPS (Inverted)
-	T0CS_T0CKIPPS_TRUE     = 0b000    // T0CKIPPS (True)
+	T0CS_T0CKIPPS_TRUE     = 0b000,   // T0CKIPPS (True)
 };
 
 void timer0_initialize(T0CKPS prescaler, U8 period)

@@ -28,7 +28,7 @@ enum T0CKPS
 	T0CKPS_8     = 0b0011,   // 1:8
 	T0CKPS_4     = 0b0010,   // 1:4
 	T0CKPS_2     = 0b0001,   // 1:2
-	T0CKPS_1     = 0b0000    // 1:1
+	T0CKPS_1     = 0b0000,   // 1:1
 };
 
 void timer0_initialize(T0CKPS prescaler, U8 period);   // initialize timer 0

@@ -12,7 +12,7 @@ enum HFFRQ
 	HFFRQ_8MHZ     = 0b011,
 	HFFRQ_4MHZ     = 0b010,
 	HFFRQ_2MHZ     = 0b001,
-	HFFRQ_1MHZ     = 0b000
+	HFFRQ_1MHZ     = 0b000,
 };
 
 void oscillator_initialize(void);             // initialize high-frequency internal oscillator

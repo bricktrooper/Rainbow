@@ -21,7 +21,7 @@ enum Opcode
 	OPCODE_REBOOT     = 0x04,
 
 	OPCODE_count,
-	OPCODE_RESPONSE   = 0xFF
+	OPCODE_RESPONSE   = 0xFF,
 } __attribute__((packed));
 
 enum Result
@@ -29,7 +29,7 @@ enum Result
 	RESULT_SUCCESS              = 0x00,
 	RESULT_ERROR_CHECKSUM       = 0x01,
 	RESULT_ERROR_OPCODE         = 0x02,
-	RESULT_ERROR_PAYLOAD_LENGTH = 0x03
+	RESULT_ERROR_PAYLOAD_LENGTH = 0x03,
 } __attribute__((packed));
 
 struct Header

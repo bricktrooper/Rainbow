@@ -11,7 +11,7 @@ enum RGB_Channel
 {
 	RED,
 	GREEN,
-	BLUE
+	BLUE,
 };
 
 void rgb_initialize(void);                         // initialize RGB settings

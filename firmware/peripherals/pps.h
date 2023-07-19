@@ -23,7 +23,7 @@ enum PPS_Input
 	PPSI_RC4 = 0x14,
 	PPSI_RC5 = 0x15,
 	PPSI_RC6 = 0x16,
-	PPSI_RC7 = 0x17
+	PPSI_RC7 = 0x17,
 };
 
 enum PPS_Output
@@ -56,7 +56,7 @@ enum PPS_Output
 	PPSO_CLC4  = 0x04,
 	PPSO_CLC3  = 0x03,
 	PPSO_CLC2  = 0x02,
-	PPSO_CLC1  = 0x01
+	PPSO_CLC1  = 0x01,
 };
 
 #endif /* PPS_H */

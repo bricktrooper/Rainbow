@@ -11,7 +11,7 @@ enum PWM_Channel
 {
 	PWM3,
 	PWM4,
-	PWM5
+	PWM5,
 };
 
 void pwm_initialize(void);                      // initialize PWM

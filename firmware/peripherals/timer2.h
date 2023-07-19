@@ -20,7 +20,7 @@ enum T2CKPS
 	T2CKPS_8   = 0b011,   // 1:8
 	T2CKPS_4   = 0b010,   // 1:4
 	T2CKPS_2   = 0b001,   // 1:2
-	T2CKPS_1   = 0b000    // 1:1
+	T2CKPS_1   = 0b000,   // 1:1
 };
 
 void timer2_initialize(T2CKPS prescaler, U8 period);   // initialize timer 2

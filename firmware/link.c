@@ -15,7 +15,7 @@ enum State
 	STATE_MAGIC,     // waiting for magic number
 	STATE_HEADER,    // waiting for rest of header
 	STATE_PAYLOAD,   // waiting for payload
-	STATE_READY      // entire packet received and valid
+	STATE_READY,     // entire packet received and valid
 };
 
 static State state = STATE_MAGIC;

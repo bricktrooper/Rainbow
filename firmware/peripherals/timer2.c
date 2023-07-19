@@ -19,7 +19,7 @@ enum T2CS
 	T2CS_HFINTOSC         = 0b0011,   // HFINTOSC (32 MHz)
 	T2CS_FOSC             = 0b0010,   // FOSC
 	T2CS_FOSC4            = 0b0001,   // FOSC/4
-	T2CS_T2CKIPPS         = 0b0000    // T2CKIPPS
+	T2CS_T2CKIPPS         = 0b0000,   // T2CKIPPS
 };
 
 void timer2_initialize(T2CKPS prescaler, U8 period)
