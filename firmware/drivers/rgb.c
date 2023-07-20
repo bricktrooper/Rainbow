@@ -17,13 +17,12 @@
 #define DEFAULT_GREEN_BRIGHTNESS   PWM_MAX
 #define DEFAULT_BLUE_BRIGHTNESS    PWM_MAX
 
-#define DEFAULT_CYCLE_PERIOD   32
+#define DEFAULT_CYCLE_SPEED   175
 
 static U8 red_brightness = DEFAULT_RED_BRIGHTNESS;
 static U8 green_brightness = DEFAULT_GREEN_BRIGHTNESS;
 static U8 blue_brightness = DEFAULT_BLUE_BRIGHTNESS;
 
-static U8 cycle_period = DEFAULT_CYCLE_PERIOD;
 static bool cycling = false;
 
 static inline PWM_Channel get_pwm_channel(RGB_Channel channel)
@@ -50,7 +49,8 @@ void rgb_initialize()
 {
 	rgb_off();
 	rgb_brightness(red_brightness, green_brightness, blue_brightness);
-	timer0_initialize(T0CKPS_1024, cycle_period);   // timer settings for cycle
+	timer0_initialize(T0CKPS_1024, 0);      // timer settings for cycle
+	rgb_cycle_speed(DEFAULT_CYCLE_SPEED);   // set default period for timer0
 }
 
 void rgb_set(RGB_Channel channel, U8 value)
@@ -175,4 +175,11 @@ void rgb_single_cycle(void)
 	{
 		rgb_cycle_update();
 	}
+}
+
+void rgb_default(void)
+{
+	rgb_brightness(DEFAULT_RED_BRIGHTNESS, DEFAULT_GREEN_BRIGHTNESS, DEFAULT_BLUE_BRIGHTNESS);
+	rgb_cycle_speed(DEFAULT_CYCLE_SPEED);
+	rgb_cycle(true);
 }

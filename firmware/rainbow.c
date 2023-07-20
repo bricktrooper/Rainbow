@@ -59,6 +59,7 @@ static Result service(Opcode opcode, void * payload)
 void main(void)
 {
 	system_initialize();
+	rgb_default();
 
 	while (1)
 	{

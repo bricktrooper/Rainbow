@@ -24,5 +24,6 @@ bool rgb_cycling(void);                            // returns true if cycle mode
 void rgb_cycle_speed(U8 speed);                    // set the speed of the cycle
 void rgb_cycle_update(void);                       // run the cycle state machine
 void rgb_single_cycle(void);                       // cycle through all the colours once
+void rgb_default(void);                            // set default brightness and cycle at default speed
 
 #endif /* RGB_H */
