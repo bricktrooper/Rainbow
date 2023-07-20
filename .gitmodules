@@ -1,6 +1,6 @@
-[submodule "software/libraries/logs"]
-	path = software/libraries/logs
+[submodule "software/submodules/logs"]
+	path = software/submodules/logs
 	url = git@github.com:bricktrooper/Logs.git
-[submodule "software/libraries/cli"]
-	path = software/libraries/cli
+[submodule "software/submodules/cli"]
+	path = software/submodules/cli
 	url = git@github.com:bricktrooper/CLI.git
