@@ -1,5 +1,6 @@
 import log
 import struct
+import time
 
 from . import uart
 from . import link
@@ -21,10 +22,13 @@ def disconnect():
 def ping(count = 1):
 	for i in range(count):
 		log.info(f"PING #{i + 1}")
+		start = time.time_ns()
 		if link.request(Opcode.PING, []) == ERROR:
 			return ERROR
 		if link.listen() == ERROR:
 			return ERROR
+		latency = time.time_ns() - start
+		log.info("Latency: %.3f ms" % (float(latency) / 1e6))
 	return SUCCESS
 
 def cycle(speed):
