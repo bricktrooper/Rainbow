@@ -7,21 +7,21 @@ serial = None
 
 BAUDRATE = 115200
 TIMEOUT_S = 1
-PORT = "/dev/cu.rainbow-kyle-DevB"
 
-def connect():
+def connect(port):
 	global serial
 	try:
 		serial = Serial(
-			port = PORT,
+			port = port,
 			baudrate = BAUDRATE,
 			timeout = TIMEOUT_S
 		)
 	except Exception as exception:
-		log.error(f"Failed to open serial port '{PORT}': {exception}")
+		log.error(f"Failed to open serial port '{port}'")
+		log.error(exception)
 		return ERROR
 
-	log.success(f"Opened serial port '{PORT}'")
+	log.success(f"Opened serial port '{serial.port}'")
 	purge()
 	return SUCCESS
 

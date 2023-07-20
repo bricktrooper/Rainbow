@@ -5,7 +5,6 @@ from . import uart
 from .rgb import RGB
 from log import colours
 from cli import ERROR, SUCCESS
-
 from enum import IntEnum
 
 class Opcode(IntEnum):
