@@ -20,7 +20,7 @@ def disconnect():
 
 def ping(count = 1):
 	for i in range(count):
-		log.info(f"PING")
+		log.info(f"PING #{i + 1}")
 		if link.request(Opcode.PING, []) == ERROR:
 			return ERROR
 		if link.listen() == ERROR:
