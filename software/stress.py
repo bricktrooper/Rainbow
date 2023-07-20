@@ -2,7 +2,6 @@
 
 import rainbow
 import log
-import time
 
 PORT = "/dev/cu.rainbow-kyle-DevB"
 
