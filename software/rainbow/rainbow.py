@@ -62,3 +62,6 @@ def reboot():
 	if link.listen() == ERROR:
 		return ERROR
 	return SUCCESS
+
+def off():
+	return colour(0, 0, 0)

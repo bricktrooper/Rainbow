@@ -108,7 +108,7 @@ def cli_off(prefix, args):
 		port = args.pop(0)
 	if rainbow.connect(port) == ERROR:
 		return ERROR
-	result = rainbow.colour(0, 0, 0)
+	result = rainbow.off()
 	rainbow.disconnect()
 	return result
 
