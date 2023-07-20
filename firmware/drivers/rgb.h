@@ -20,6 +20,7 @@ void rgb_colour(U8 red, U8 green, U8 blue);        // set value for each channel
 void rgb_off(void);                                // turn lights off
 void rgb_brightness(U8 red,  U8 green, U8 blue);   // set maximum brightness for each channel
 void rgb_cycle(bool enable);                       // enable/disable cycle mode
+bool rgb_cycling(void);                            // returns true if cycle mode is enabled
 void rgb_cycle_speed(U8 speed);                    // set the speed of the cycle
 void rgb_cycle_update(void);                       // run the cycle state machine
 void rgb_single_cycle(void);                       // cycle through all the colours once

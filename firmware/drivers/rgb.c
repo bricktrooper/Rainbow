@@ -24,6 +24,7 @@ static U8 green_brightness = DEFAULT_GREEN_BRIGHTNESS;
 static U8 blue_brightness = DEFAULT_BLUE_BRIGHTNESS;
 
 static U8 cycle_period = DEFAULT_CYCLE_PERIOD;
+static bool cycling = false;
 
 static inline PWM_Channel get_pwm_channel(RGB_Channel channel)
 {
@@ -100,7 +101,18 @@ void rgb_brightness(U8 red, U8 green, U8 blue)
 
 void rgb_cycle(bool enable)
 {
+	cycling = enable;
 	timer0_enable(enable);
+
+	if (!enable)
+	{
+		timer0_reset();
+	}
+}
+
+bool rgb_cycling(void)
+{
+	return cycling;
 }
 
 void rgb_cycle_speed(U8 speed)
@@ -154,7 +166,7 @@ void rgb_cycle_update(void)
 		}
 	}
 
-	PIR0bits.TMR0IF = 0;
+	timer0_reset();
 }
 
 void rgb_single_cycle(void)

@@ -44,7 +44,7 @@ void timer0_initialize(T0CKPS prescaler, U8 period)
 	T0CON1bits.T0CKPS = prescaler;    // 1:1 prescaler
 	timer0_period(period);            // timer period
 	timer0_interrupt(false);          // disable interrupt
-	PIR0bits.TMR0IF = 0;              // reset interrupt flag (set when TMR0L == TMR0H)
+	timer0_reset();                   // reset interrupt flag (set when TMR0L == TMR0H)
 }
 
 void timer0_enable(bool enable)
@@ -60,6 +60,11 @@ void timer0_interrupt(bool enable)
 bool timer0_expired(void)
 {
 	return PIR0bits.TMR0IF;
+}
+
+void timer0_reset(void)
+{
+	PIR0bits.TMR0IF = 0;
 }
 
 void timer0_period(U8 period)

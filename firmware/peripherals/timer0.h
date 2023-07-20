@@ -35,6 +35,7 @@ void timer0_initialize(T0CKPS prescaler, U8 period);   // initialize timer 0
 void timer0_enable(bool enable);                       // enable/disable timer 0
 void timer0_interrupt(bool enable);                    // enable/disable timer 0 interrupt
 bool timer0_expired(void);                             // check if timer 0 expired
+void timer0_reset(void);                               // clear the timer flag if it expired
 void timer0_period(U8 period);                         // set timer 0 period
 
 #endif /* TIMER0_H */

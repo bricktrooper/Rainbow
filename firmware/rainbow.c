@@ -6,6 +6,8 @@
 #include "rgb.h"
 #include "link.h"
 
+#define PAYLOAD_BUFFER_SIZE    4
+
 static Result service(Opcode opcode, void * payload)
 {
 	switch (opcode)
@@ -16,7 +18,12 @@ static Result service(Opcode opcode, void * payload)
 		}
 		case OPCODE_COLOUR:
 		{
-			rgb_cycle(false);
+			// disable cycle if needed
+			if (rgb_cycling())
+			{
+				rgb_cycle(false);
+			}
+
 			RGB * colour = payload;
 			rgb_colour(colour->red, colour->green, colour->blue);
 			return RESULT_SUCCESS;
@@ -55,9 +62,10 @@ void main(void)
 
 	while (1)
 	{
+		// run RX state machine
 		Header header;
-		U8 payload [4];
-		bool ready = link_listen(&header, payload, sizeof(payload));   // run RX state machine
+		U8 payload [PAYLOAD_BUFFER_SIZE];
+		bool ready = link_listen(&header, payload, PAYLOAD_BUFFER_SIZE);
 
 		if (ready)
 		{
@@ -71,7 +79,11 @@ void main(void)
 			link_respond(result);
 		}
 
-		rgb_cycle_update();
+		// update cycle state machine if neeed
+		if (rgb_cycling())
+		{
+			rgb_cycle_update();
+		}
 	}
 }
 
