@@ -57,8 +57,8 @@ def ping(count = 1):
 	count = parse_unsigned("count", count, 0, MAX_PINGS)
 	if count == ERROR:
 		return ERROR
-	log.info(f"PING")
 	for i in range(count):
+		log.info(f"PING")
 		if link.request(Opcode.PING, []) == ERROR:
 			return ERROR
 		if link.listen() == ERROR:
