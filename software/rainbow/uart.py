@@ -1,7 +1,7 @@
 import log
 
-from serial import Serial
 from cli import ERROR, SUCCESS
+from serial import Serial
 
 serial = None
 

@@ -1,159 +1,60 @@
 #! /usr/local/bin/python3
 
+import rainbow
 import log
-import uart
-import link
-import struct
 
 from log import colours
-from link import Opcode
+from cli import Command
 from os.path import basename
-from cli import Command, ERROR, SUCCESS
 from sys import argv
-from rgb import RGB
-
-# ===================== UTILITIES ===================== #
-
-def parse_unsigned(name, string, min, max):
-	value = None
-
-	try:
-		value = int(string)
-	except ValueError:
-		log.error(f"'{name}' must be an integer")
-		return ERROR
-
-	if value < min or value > max:
-		log.error(f"'{name}' must be between {min} and {max}")
-		return ERROR
-
-	return value
-
-# ===================== REQUESTS ===================== #
-
-def ping():
-	log.info(f"PING")
-	if link.request(Opcode.PING, []) == ERROR:
-		return ERROR
-	if link.listen() == ERROR:
-		return ERROR
-	return SUCCESS
-
-def cycle(speed):
-	log.info(f"CYCLE {colours.YELLOW}speed{colours.RESET}: {speed}")
-	payload = struct.pack("<B", speed)
-	if link.request(Opcode.CYCLE, payload) == ERROR:
-		return ERROR
-	if link.listen() == ERROR:
-		return ERROR
-	return SUCCESS
-
-def colour(red, green, blue):
-	rgb = RGB(red, green, blue)
-	log.info(f"COLOUR {rgb}")
-	payload = rgb.pack()
-	if link.request(Opcode.COLOUR, payload) == ERROR:
-		return ERROR
-	if link.listen() == ERROR:
-		return ERROR
-	return SUCCESS
-
-def brightness(red, green, blue):
-	rgb = RGB(red, green, blue)
-	log.info(f"BRIGHTNESS {rgb}")
-	payload = rgb.pack()
-	if link.request(Opcode.BRIGHTNESS, payload) == ERROR:
-		return ERROR
-	if link.listen() == ERROR:
-		return ERROR
-	return SUCCESS
-
-def reboot():
-	if link.request(Opcode.REBOOT, []) == ERROR:
-		return ERROR
-	if link.listen() == ERROR:
-		return ERROR
-	return SUCCESS
 
 # ===================== CLI SUBCOMMANDS ===================== #
-
-MAX_PINGS = 100
 
 def cli_ping(prefix, args):
 	count = 1
 	if len(args) > 0:
-		count = parse_unsigned("count", args.pop(0), 0, MAX_PINGS)
-		if count == ERROR:
-			return ERROR
-
+		count = args.pop(0)
 	log.info(f"PING {colours.MAGENTA}count{colours.RESET}: {count}")
-	uart.connect()
-	for i in range(count):
-		if ping() == ERROR:
-			return ERROR
-	uart.disconnect()
-	return SUCCESS
+	rainbow.connect()
+	result = rainbow.ping(count)
+	rainbow.disconnect()
+	return result
 
 def cli_colour(prefix, args):
 	red = args.pop(0)
 	green = args.pop(0)
 	blue = args.pop(0)
-
-	red = parse_unsigned("red", red, 0, 255)
-	if red == ERROR:
-		return ERROR
-	green = parse_unsigned("green", green, 0, 255)
-	if green == ERROR:
-		return ERROR
-	blue = parse_unsigned("blue", blue, 0, 255)
-	if blue == ERROR:
-		return ERROR
-
-	uart.connect()
-	result = colour(red, green, blue)
-	uart.disconnect()
+	rainbow.connect()
+	result = rainbow.colour(red, green, blue)
+	rainbow.disconnect()
 	return result
 
 def cli_cycle(prefix, args):
-	speed = parse_unsigned("speed", args.pop(0), 0, 255)
-	if speed == ERROR:
-		return ERROR
-
-	uart.connect()
-	result = cycle(speed)
-	uart.disconnect()
+	speed = args.pop(0)
+	rainbow.connect()
+	result = rainbow.cycle(speed)
+	rainbow.disconnect()
 	return result
 
 def cli_brightness(prefix, args):
 	red = args.pop(0)
 	green = args.pop(0)
 	blue = args.pop(0)
-
-	red = parse_unsigned("red", red, 0, 255)
-	if red == ERROR:
-		return ERROR
-	green = parse_unsigned("green", green, 0, 255)
-	if green == ERROR:
-		return ERROR
-	blue = parse_unsigned("blue", blue, 0, 255)
-	if blue == ERROR:
-		return ERROR
-
-	uart.connect()
-	result = brightness(red, green, blue)
-	uart.disconnect()
+	rainbow.connect()
+	result = rainbow.brightness(red, green, blue)
+	rainbow.disconnect()
 	return result
 
 def cli_reboot(prefix, args):
-	uart.connect()
-	result = reboot()
-	uart.disconnect()
+	rainbow.connect()
+	result = rainbow.reboot()
+	rainbow.disconnect()
 	return result
 
 def cli_off(prefix, args):
-	uart.connect()
-	result = colour(0, 0, 0)
-	uart.disconnect()
+	rainbow.connect()
+	result = rainbow.colour(0, 0, 0)
+	rainbow.disconnect()
 	return result
 
 SUBCOMMANDS = {

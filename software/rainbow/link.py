@@ -1,11 +1,12 @@
-import struct
 import log
-import uart
+import struct
 
+from . import uart
+from .rgb import RGB
 from log import colours
-from enum import IntEnum
 from cli import ERROR, SUCCESS
-from rgb import RGB
+
+from enum import IntEnum
 
 class Opcode(IntEnum):
 	PING       = 0x00

@@ -1,2 +1,0 @@
-need to use 12 V to keep current low.  Need a buckboost to step VDD down to 5 V or 3.3 V.  Basically the input voltage for the LEDs can be whatever so that it works for any light strip.  But advised to step logic down to 3.3 V since idk how buckboost will work with 5 V input.  At least you can use a buck only.  Major engineering rework is required for this project.
-
