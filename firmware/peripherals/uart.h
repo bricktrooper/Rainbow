@@ -5,6 +5,9 @@
 
 #define NEWLINE   "\r\n"
 
+#define DEFAULT_BAUD_RATE   9600
+#define MAX_BAUD_RATE       2000000
+
 #include "types.h"
 
 void uart_initialize(void);                         // initialize UART
@@ -20,5 +23,7 @@ U8 uart_peek_rx(void);                              // returns the current lengt
 U8 uart_peek_tx(void);                              // returns the current length of the TX queue
 void uart_rx_service(void);                         // RX ISR
 void uart_tx_service(void);                         // TX ISR
+void uart_set_baud_rate(U32 rate);                  // set the baud rate in bps up to MAX_BAUD_RATE
+U32 uart_get_baud_rate(void);                       // get the baud rate in bps
 
 #endif /* UART_H */

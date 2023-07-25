@@ -20,6 +20,7 @@ static char * abort_reasons [ABORT_count] = {
 	"RX_BUFFER_OVERFLOW",
 	"TX_BUFFER_OVERFLOW",
 	"PAYLOAD_OVERFLOW",
+	"INVALID_BAUD_RATE",
 };
 
 static inline void startup_indicator(void)
@@ -56,6 +57,8 @@ void system_initialize(void)
 
 void system_abort(Abort abort, char const * caller)
 {
+	rgb_off();   // turn RGB lights off
+
 	while (1)
 	{
 		led_blink(1);   // blink LED

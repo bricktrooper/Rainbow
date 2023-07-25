@@ -6,10 +6,13 @@
 #include "system.h"
 #include "pps.h"
 #include "queue.h"
+#include "oscillator.h"
 
 // size can range from 0 to 255
 #define RX_BUFFER_SIZE   16
 #define TX_BUFFER_SIZE   UINT8_MAX
+
+static U32 baud_rate = DEFAULT_BAUD_RATE;
 
 static Queue rx_queue;
 static Queue tx_queue;
@@ -37,10 +40,6 @@ void uart_initialize(void)
 	BAUD1CONbits.WUE = 0;     // disable wake-up
 	BAUD1CONbits.ABDEN = 0;   // disable auto-baud detect
 
-	// set baud rate to 115900 bps @ 32 MHz (~115200 bps)
-	SP1BRGH = 0;
-	SP1BRGL = 68;
-
 	RX1DTPPS = PPSI_RC5;          // use RC5 for RX1
 	TRISCbits.TRISC5 = INPUT;     // configure RC5 as input
 	ANSELCbits.ANSC5 = DIGITAL;   // configure RC5 as digital
@@ -48,6 +47,8 @@ void uart_initialize(void)
 	RC4PPS = PPSO_TX1;            // use RC4 for TX1
 	TRISCbits.TRISC4 = OUTPUT;    // configure RC4 as output
 	ANSELCbits.ANSC4 = DIGITAL;   // configure RC4 as digital
+
+	uart_set_baud_rate(115200);   // set baud rate (must be done after setting BGRH and BRG16)
 
 	uart_interrupts(true, true);                              // enable non-blocking mode for RX and TX (uses interrupts)
 	queue_initialize(&rx_queue, rx_buffer, RX_BUFFER_SIZE);   // initialize RX queue (used for non-blocking mode)
@@ -207,7 +208,6 @@ void uart_rx_service(void)
 
 void uart_tx_service(void)
 {
-
 	U8 byte;
 
 	// pop byte from TX queue
@@ -221,4 +221,42 @@ void uart_tx_service(void)
 
 	// disable TX interrupt if there is no more data to send
 	PIE3bits.TX1IE = result;
+}
+
+void uart_set_baud_rate(U32 rate)
+{
+	if (rate > MAX_BAUD_RATE)
+	{
+		ABORT(ABORT_INVALID_BAUD_RATE);
+	}
+
+	U32 k = 0;
+	bool BRGH = TX1STAbits.BRGH;
+	bool BRG16 = BAUD1CONbits.BRG16;
+
+	if (BRG16 & BRGH)
+	{
+		k = 4;
+	}
+	else if (BRG16 ^ BRGH)
+	{
+		k = 16;
+	}
+	else   // BRG16 == 0 && BRGH == 0
+	{
+		k = 64;
+	}
+
+	U32 f = oscillator_get_frequency();
+	U16 spbrg = (U16)((f / (k * rate)) - 1);
+
+	SP1BRGH = (U8)(spbrg >> 8);
+	SP1BRGL = (U8)(spbrg & 0xFF);
+
+	baud_rate = rate;
+}
+
+U32 uart_get_baud_rate(void)
+{
+	return baud_rate;
 }
