@@ -1,5 +1,3 @@
-from .rainbow import connect
-from .rainbow import disconnect
 from .rainbow import ping
 from .rainbow import cycle
 from .rainbow import colour
@@ -9,3 +7,6 @@ from .rainbow import off
 
 from .utilities import parse_int
 from .utilities import parse_rgb
+
+from .uart import connect
+from .uart import disconnect

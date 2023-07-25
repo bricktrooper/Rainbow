@@ -15,7 +15,7 @@ from rainbow.rgb import RGB
 MAX_PINGS = 100
 
 # default settings
-PORT = "/dev/cu.rainbow-kyle-DevB"
+PORT = "/dev/cu.bricktrooper-DevB"
 BRIGHTNESS = RGB(255, 128, 255)
 CYCLE_SPEED = 175
 

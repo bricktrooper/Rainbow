@@ -2,22 +2,11 @@ import log
 import struct
 import time
 
-from . import uart
 from . import link
 from log import colours
 from cli import ERROR, SUCCESS
 from .link import Opcode
 from .rgb import RGB
-
-# ===================== UART ===================== #
-
-def connect(port):
-	return uart.connect(port)
-
-def disconnect():
-	return uart.disconnect()
-
-# ===================== REQUESTS ===================== #
 
 def ping(count = 1):
 	for i in range(count):
