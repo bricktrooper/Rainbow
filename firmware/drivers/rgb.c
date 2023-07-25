@@ -169,7 +169,7 @@ void rgb_cycle_update(void)
 	timer0_reset();
 }
 
-void rgb_single_cycle(void)
+void rgb_cycle_single(void)
 {
 	for (int i = 0; i < 256 * 6; i++)
 	{

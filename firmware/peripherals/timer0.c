@@ -43,7 +43,7 @@ void timer0_initialize(T0CKPS prescaler, U8 period)
 	T0CON1bits.T0ASYNC = 0;           // synchronize input clock to Fosc/4 (max frequency)
 	T0CON1bits.T0CKPS = prescaler;    // 1:1 prescaler
 	timer0_period(period);            // timer period
-	timer0_interrupt(false);          // disable interrupt
+	timer0_interrupts(false);         // disable interrupt
 	timer0_reset();                   // reset interrupt flag (set when TMR0L == TMR0H)
 }
 
@@ -52,7 +52,7 @@ void timer0_enable(bool enable)
 	T0CON0bits.T0EN = enable;
 }
 
-void timer0_interrupt(bool enable)
+void timer0_interrupts(bool enable)
 {
 	PIE0bits.TMR0IE = enable;
 }

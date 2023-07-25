@@ -25,6 +25,6 @@ enum T2CKPS
 
 void timer2_initialize(T2CKPS prescaler, U8 period);   // initialize timer 2
 void timer2_enable(bool enable);                       // enable/disable timer 2
-void timer2_interrupt(bool enable);                    // enable/disable timer 2 interrupt
+void timer2_interrupts(bool enable);                   // enable/disable timer 2 interrupt
 
 #endif /* TIMER2_H */

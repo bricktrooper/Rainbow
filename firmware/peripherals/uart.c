@@ -49,12 +49,12 @@ void uart_initialize(void)
 	TRISCbits.TRISC4 = OUTPUT;    // configure RC4 as output
 	ANSELCbits.ANSC4 = DIGITAL;   // configure RC4 as digital
 
-	uart_interrupt(true, true);                               // enable non-blocking mode for RX and TX (uses interrupts)
+	uart_interrupts(true, true);                              // enable non-blocking mode for RX and TX (uses interrupts)
 	queue_initialize(&rx_queue, rx_buffer, RX_BUFFER_SIZE);   // initialize RX queue (used for non-blocking mode)
 	queue_initialize(&tx_queue, tx_buffer, TX_BUFFER_SIZE);   // initialize TX queue (used for non-blocking mode)
 }
 
-void uart_interrupt(bool rx, bool tx)
+void uart_interrupts(bool rx, bool tx)
 {
 	PIE3bits.RC1IE = rx;
 	PIE3bits.TX1IE = tx;
