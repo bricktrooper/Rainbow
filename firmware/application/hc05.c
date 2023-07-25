@@ -33,21 +33,6 @@ static void wait(void)
 	_delay(10000000);
 }
 
-static void begin(void)
-{
-	system_initialize();
-	uart_set_baud_rate(38400);
-	led_off();
-	wait();
-}
-
-static void end(void)
-{
-	wait();
-	led_on();   // turn LED on to indicate end of program
-	while (1);
-}
-
 static void verify(void)
 {
 	wait();   // wait for HC-05 to respond
@@ -131,8 +116,12 @@ static void at_reset(void)
 
 void hc05(char const * name)
 {
-	U32 baud_rate = uart_get_baud_rate();
-	begin();
+	system_initialize();
+	led_off();
+
+	U32 baud_rate = uart_get_baud_rate();   // get baud rate before it is changed for AT mode
+	uart_set_baud_rate(38400);              // change baud rate temporarilty for AT commands
+	wait();
 
 	at_ping();                      // ping HC-05
 	at_orgl();                      // restore default settings
@@ -140,5 +129,8 @@ void hc05(char const * name)
 	at_uart(baud_rate, 0, false);   // UART settings
 	at_name(name);                  // Bluetooth wireless name
 
-	end();
+	wait();
+	uart_set_baud_rate(baud_rate);   // restore original baud rate
+	led_on();                        // turn LED on to indicate end of program
+	while (1);
 }
