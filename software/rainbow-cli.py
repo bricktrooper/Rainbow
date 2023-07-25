@@ -2,7 +2,6 @@
 
 import rainbow
 import log
-import os
 
 from log import colours
 from cli import Command, ERROR, SUCCESS

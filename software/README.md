@@ -12,7 +12,13 @@ https://github.com/bricktrooper/CLI
 ```
 Clone these repository and follow the instructions to install the modules using `pip`.
 
+Finally, install the rainbow module from this repository:
+```
+cd api
+pip install .
+```
+
 Then to run the CLI tool, use the following command:
 ```
-python3 rainbow.py
+python3 rainbow-cli.py
 ```
