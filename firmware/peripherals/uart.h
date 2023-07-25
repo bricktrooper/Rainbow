@@ -21,8 +21,6 @@ void uart_echo(void);                               // send RX bytes back on TX
 void uart_interrupts(bool rx, bool tx);             // enables/disables RX/TX interrupts (blocking/non-blocking)
 U8 uart_peek_rx(void);                              // returns the current length of the RX queue
 U8 uart_peek_tx(void);                              // returns the current length of the TX queue
-void uart_purge_rx(void);                           // discards all data from the RX queue
-void uart_purge_tx(void);                           // discards all data from the TX queue
 void uart_rx_service(void);                         // RX ISR
 void uart_tx_service(void);                         // TX ISR
 void uart_set_baud_rate(U32 rate);                  // set the baud rate in bps up to MAX_BAUD_RATE
