@@ -1,6 +1,8 @@
 #ifndef OSCILLATOR_H
 #define OSCILLATOR_H
 
+#include "types.h"
+
 typedef enum HFFRQ HFFRQ;
 
 enum HFFRQ
@@ -15,7 +17,8 @@ enum HFFRQ
 	HFFRQ_1MHZ     = 0b000,
 };
 
-void oscillator_initialize(void);             // initialize high-frequency internal oscillator
-void oscillator_frequency(HFFRQ frequency);   // set oscillator frequency
+void oscillator_initialize(void);                 // initialize high-frequency internal oscillator
+void oscillator_set_frequency(HFFRQ frequency);   // set oscillator frequency
+U32 oscillator_get_frequency(void);               // get oscillator frequency
 
 #endif /* OSCILLATOR_H */
