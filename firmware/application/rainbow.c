@@ -1,7 +1,6 @@
 #include <xc.h>
 
 #include "system.h"
-#include "led.h"
 #include "uart.h"
 #include "rgb.h"
 #include "link.h"
@@ -85,17 +84,5 @@ void main(void)
 		{
 			rgb_cycle_update();
 		}
-	}
-}
-
-void __interrupt() isr()
-{
-	if (PIR3bits.RC1IF)
-	{
-		uart_rx_service();
-	}
-	else if (PIR3bits.TX1IF)
-	{
-		uart_tx_service();
 	}
 }

@@ -13,7 +13,7 @@
 #include "pwm.h"
 #include "rgb.h"
 
-#define COLON     ": "
+#define COLON   ": "
 
 static char * abort_reasons [ABORT_count] = {
 	"RX_OVERRUN",
@@ -81,4 +81,18 @@ void system_reboot(void)
 {
 	// enable watchdog timer to force reset
 	WDTCON0bits.SWDTEN = 1;
+}
+
+// ===================== INTERRUPT SERVICE ===================== //
+
+void __interrupt() isr()
+{
+	if (PIR3bits.RC1IF)
+	{
+		uart_rx_service();
+	}
+	else if (PIR3bits.TX1IF)
+	{
+		uart_tx_service();
+	}
 }
