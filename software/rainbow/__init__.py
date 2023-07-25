@@ -10,3 +10,4 @@ from .utilities import parse_rgb
 
 from .uart import connect
 from .uart import disconnect
+from .uart import set_default_port

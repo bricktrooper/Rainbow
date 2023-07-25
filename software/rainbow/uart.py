@@ -1,4 +1,5 @@
 import log
+import os
 
 from cli import ERROR, SUCCESS
 from serial import Serial
@@ -7,8 +8,31 @@ serial = None
 
 BAUDRATE = 115200
 TIMEOUT_S = 1
+SETTINGS = os.path.expanduser("~/.rainbow")
+DEFAULT_PORT = "/dev/cu.rainbow-DevB"
 
-def connect(port):
+def get_default_port():
+	if os.path.isfile(SETTINGS):
+		file = open(SETTINGS, "r")
+		port = file.readline()
+		file.close()
+		log.debug(f"Found serial port '{port}' in '{SETTINGS}'")
+	else:
+		port = DEFAULT_PORT
+		log.warning(f"Using default serial port '{port}'")
+		log.warning("Use the 'port' command to set your default serial port")
+	return port
+
+def set_default_port(port):
+	file = open(SETTINGS, "w+")
+	file.write(port)
+	file.close()
+	log.success(f"Saved default serial port '{port}' in '{SETTINGS}'")
+
+def connect(port = None):
+	if port is None:
+		port = get_default_port()
+
 	global serial
 	try:
 		serial = Serial(

@@ -2,6 +2,7 @@
 
 import rainbow
 import log
+import os
 
 from log import colours
 from cli import Command, ERROR, SUCCESS
@@ -15,7 +16,6 @@ from rainbow.rgb import RGB
 MAX_PINGS = 100
 
 # default settings
-PORT = "/dev/cu.bricktrooper-DevB"
 BRIGHTNESS = RGB(255, 128, 255)
 CYCLE_SPEED = 175
 
@@ -25,7 +25,7 @@ def cli_ping(prefix, args):
 	count = 1
 	if len(args) > 0:
 		count = args.pop(0)
-	port = PORT
+	port = None
 	if len(args) > 0:
 		port = args.pop(0)
 
@@ -44,7 +44,7 @@ def cli_colour(prefix, args):
 	red = args.pop(0)
 	green = args.pop(0)
 	blue = args.pop(0)
-	port = PORT
+	port = None
 	if len(args) > 0:
 		port = args.pop(0)
 
@@ -60,7 +60,7 @@ def cli_colour(prefix, args):
 
 def cli_cycle(prefix, args):
 	speed = args.pop(0)
-	port = PORT
+	port = None
 	if len(args) > 0:
 		port = args.pop(0)
 
@@ -78,7 +78,7 @@ def cli_brightness(prefix, args):
 	red = args.pop(0)
 	green = args.pop(0)
 	blue = args.pop(0)
-	port = PORT
+	port = None
 	if len(args) > 0:
 		port = args.pop(0)
 
@@ -93,7 +93,7 @@ def cli_brightness(prefix, args):
 	return result
 
 def cli_reboot(prefix, args):
-	port = PORT
+	port = None
 	if len(args) > 0:
 		port = args.pop(0)
 	if rainbow.connect(port) == ERROR:
@@ -103,7 +103,7 @@ def cli_reboot(prefix, args):
 	return result
 
 def cli_off(prefix, args):
-	port = PORT
+	port = None
 	if len(args) > 0:
 		port = args.pop(0)
 	if rainbow.connect(port) == ERROR:
@@ -113,7 +113,7 @@ def cli_off(prefix, args):
 	return result
 
 def cli_default(prefix, args):
-	port = PORT
+	port = None
 	if len(args) > 0:
 		port = args.pop(0)
 	if rainbow.connect(port) == ERROR:
@@ -123,6 +123,11 @@ def cli_default(prefix, args):
 	result |= rainbow.cycle(CYCLE_SPEED)
 	rainbow.disconnect()
 	return result
+
+def cli_port(prefix, args):
+	port = args.pop(0)
+	rainbow.set_default_port(port)
+	return SUCCESS
 
 SUBCOMMANDS = {
 	"ping":
@@ -181,12 +186,21 @@ SUBCOMMANDS = {
 		"max":         1,
 		"description": "Set default brightness and cycle at default speed"
 	},
+	"port":
+	{
+		"handler":     cli_port,
+		"usage":       "<port>",
+		"min":         1,
+		"max":         1,
+		"description": "Set default serial port"
+	},
 }
 
 # ===================== SCRIPT ===================== #
 
 def main():
 	log.suppress(log.Level.DEBUG)
+
 	program = basename(argv.pop(0))
 	prefix = f"{program}"
 	command = Command(prefix, 0)
