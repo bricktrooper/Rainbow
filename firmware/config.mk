@@ -12,6 +12,7 @@ LIBS +=
 
 # source file directories
 # NOTE: include paths are searched in this order
+DIR += application
 DIR += peripherals
 DIR += drivers
 DIR += utilities

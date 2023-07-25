@@ -3,7 +3,7 @@
 import rainbow
 import log
 
-PORT = "/dev/cu.rainbow-kyle-DevB"
+PORT = "/dev/cu.rainbow-shane-DevB"
 
 log.suppress(log.Level.DEBUG)
 

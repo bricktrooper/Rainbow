@@ -3,7 +3,7 @@
 
 /*
 This file contains settings for the PIC configuration bits.
-Please see docs/pic16f690.html for configuration settings.
+Please see "documentation/PIC16F15325 Configuration Settings.html" for configuration settings.
 */
 
 // CONFIG1 //
