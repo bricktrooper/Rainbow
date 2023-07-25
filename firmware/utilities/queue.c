@@ -4,6 +4,11 @@ void queue_initialize(Queue * queue, U8 * data, U8 size)
 {
 	queue->data = data;
 	queue->size = size;
+	queue_reset(queue);
+}
+
+void queue_reset(Queue * queue)
+{
 	queue->length = 0;
 	queue->read = 0;
 	queue->write = 0;

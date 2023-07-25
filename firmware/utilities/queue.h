@@ -16,10 +16,11 @@ struct Queue
 	U8 length;   // number of used bytes in queue
 };
 
-void queue_initialize(Queue * queue, U8 * data, U8 size);
-bool queue_push(Queue * queue, U8 value);
-bool queue_pop(Queue * queue, U8 * value);
-bool queue_empty(Queue * queue);
-bool queue_full(Queue * queue);
+void queue_initialize(Queue * queue, U8 * data, U8 size);   // initialize the queue with a buffer
+void queue_reset(Queue * queue);                            // reset the queue and discard all data
+bool queue_push(Queue * queue, U8 value);                   // enqueue a byte
+bool queue_pop(Queue * queue, U8 * value);                  // dequeue a byte
+bool queue_empty(Queue * queue);                            // returns true if the queue is empty
+bool queue_full(Queue * queue);                             // returns true if queue.length == queue.size
 
 #endif /* QUEUE_H */

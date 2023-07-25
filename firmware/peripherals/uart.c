@@ -260,3 +260,13 @@ U32 uart_get_baud_rate(void)
 {
 	return baud_rate;
 }
+
+void uart_purge_rx(void)
+{
+	queue_reset(&rx_queue);
+}
+
+void uart_purge_tx(void)
+{
+	queue_reset(&tx_queue);
+}
