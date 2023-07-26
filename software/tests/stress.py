@@ -19,9 +19,14 @@ port = None
 if len(argv) > 0:
     port = argv.pop(0)
 
-rainbow.connect(port)
-rainbow.brightness(255, 255, 255)
-rainbow.cycle(255)
-rainbow.ping(100)
-rainbow.off()
+if rainbow.connect(port) == ERROR:
+    exit(ERROR)
+if rainbow.brightness(255, 255, 255) == ERROR:
+    exit(ERROR)
+if rainbow.cycle(255) == ERROR:
+    exit(ERROR)
+if rainbow.ping(100) == ERROR:
+    exit(ERROR)
+if rainbow.off() == ERROR:
+    exit(ERROR)
 rainbow.disconnect()
