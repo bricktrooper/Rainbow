@@ -120,12 +120,13 @@ void hc05(char const * name)
 	led_off();
 
 	U32 baud_rate = uart_get_baud_rate();   // get baud rate before it is changed for AT mode
-	uart_set_baud_rate(38400);              // change baud rate temporarilty for AT commands
+	uart_set_baud_rate(38400);              // change baud rate temporarily for AT commands
 	wait();
 
 	at_ping();                      // ping HC-05
 	at_orgl();                      // restore default settings
 	at_role(SLAVE);                 // configure as slave
+	at_cmode(ANY);                  // connect to any Bluetooth device
 	at_uart(baud_rate, 0, false);   // UART settings
 	at_name(name);                  // Bluetooth wireless name
 
