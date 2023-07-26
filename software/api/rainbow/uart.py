@@ -7,7 +7,7 @@ from serial import Serial
 serial = None
 
 BAUDRATE = 115200
-TIMEOUT_S = 1
+TIMEOUT_S = 0.1
 SETTINGS = os.path.expanduser("~/.rainbow")
 DEFAULT_PORT = "/dev/cu.rainbow-DevB"
 
