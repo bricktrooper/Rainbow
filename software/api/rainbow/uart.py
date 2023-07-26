@@ -11,7 +11,15 @@ TIMEOUT_S = 0.1
 SETTINGS = os.path.expanduser("~/.rainbow")
 DEFAULT_PORT = "/dev/cu.rainbow-DevB"
 
-def get_default_port():
+def default_port(port = None):
+	# update port if provided
+	if port is not None:
+		file = open(SETTINGS, "w+")
+		file.write(port)
+		file.close()
+		log.success(f"Saved default serial port '{port}' in '{SETTINGS}'")
+
+	# return port
 	if os.path.isfile(SETTINGS):
 		file = open(SETTINGS, "r")
 		port = file.readline()
@@ -23,15 +31,9 @@ def get_default_port():
 		log.warning("Use the 'port' command to set your default serial port")
 	return port
 
-def set_default_port(port):
-	file = open(SETTINGS, "w+")
-	file.write(port)
-	file.close()
-	log.success(f"Saved default serial port '{port}' in '{SETTINGS}'")
-
 def connect(port = None):
 	if port is None:
-		port = get_default_port()
+		port = default_port()
 
 	global serial
 	try:

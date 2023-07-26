@@ -146,7 +146,7 @@ def cli_default(prefix, args):
 
 def cli_port(prefix, args):
 	port = args.pop(0)
-	rainbow.set_default_port(port)
+	rainbow.default_port(port)
 	return SUCCESS
 
 # ===================== SUBCOMMAND TABLE ===================== #

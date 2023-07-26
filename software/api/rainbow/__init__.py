@@ -8,4 +8,4 @@ from .rainbow import MAX_PINGS
 
 from .uart import connect
 from .uart import disconnect
-from .uart import set_default_port
+from .uart import default_port
