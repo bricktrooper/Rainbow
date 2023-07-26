@@ -7,12 +7,11 @@ from log import colours
 from cli import Command, ERROR, SUCCESS
 from os.path import basename
 from sys import argv
-from rainbow.utilities import parse_int, parse_rgb, UINT8_MAX
+from rainbow.utilities import parse_int, verify_range
 from rainbow.rgb import RGB
+from rainbow import utilities
 
 # ===================== CONSTANTS ===================== #
-
-MAX_PINGS = 100
 
 # default settings
 BRIGHTNESS = RGB(255, 128, 255)
@@ -28,8 +27,10 @@ def cli_ping(prefix, args):
 	if len(args) > 0:
 		port = args.pop(0)
 
-	count = parse_int("count", count, 0, MAX_PINGS)
-	if count == None:
+	count = parse_int("count", count)
+	if count is None:
+		return ERROR
+	if verify_range("count", count, 0, rainbow.MAX_PINGS) == ERROR:
 		return ERROR
 
 	log.info(f"PING {colours.MAGENTA}count{colours.RESET}: {count}")
@@ -47,8 +48,17 @@ def cli_colour(prefix, args):
 	if len(args) > 0:
 		port = args.pop(0)
 
-	rgb = parse_rgb(red, green, blue)
-	if rgb is None:
+	red = parse_int("red", red)
+	if red == None:
+		return ERROR
+	green = parse_int("green", green)
+	if green == None:
+		return ERROR
+	blue = parse_int("blue", blue)
+	if blue == None:
+		return ERROR
+	rgb = RGB(red, green, blue)
+	if rgb.verify() == ERROR:
 		return ERROR
 
 	if rainbow.connect(port) == ERROR:
@@ -63,8 +73,10 @@ def cli_cycle(prefix, args):
 	if len(args) > 0:
 		port = args.pop(0)
 
-	speed = parse_int("speed", speed, 0, UINT8_MAX)
+	speed = parse_int("speed", speed)
 	if speed == None:
+		return ERROR
+	if verify_range("count", speed, 0, utilities.UINT8_MAX) == ERROR:
 		return ERROR
 
 	if rainbow.connect(port) == ERROR:
@@ -81,8 +93,17 @@ def cli_brightness(prefix, args):
 	if len(args) > 0:
 		port = args.pop(0)
 
-	rgb = parse_rgb(red, green, blue)
-	if rgb is None:
+	red = parse_int("red", red)
+	if red == None:
+		return ERROR
+	green = parse_int("green", green)
+	if green == None:
+		return ERROR
+	blue = parse_int("blue", blue)
+	if blue == None:
+		return ERROR
+	rgb = RGB(red, green, blue)
+	if rgb.verify() == ERROR:
 		return ERROR
 
 	if rainbow.connect(port) == ERROR:
@@ -127,6 +148,8 @@ def cli_port(prefix, args):
 	port = args.pop(0)
 	rainbow.set_default_port(port)
 	return SUCCESS
+
+# ===================== SUBCOMMAND TABLE ===================== #
 
 SUBCOMMANDS = {
 	"ping":

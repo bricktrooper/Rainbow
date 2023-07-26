@@ -3,12 +3,19 @@ import struct
 import time
 
 from . import link
+
 from log import colours
 from cli import ERROR, SUCCESS
+
 from .link import Opcode
 from .rgb import RGB
+from .utilities import verify_range, UINT8_MAX
+
+MAX_PINGS = 100
 
 def ping(count = 1):
+	if verify_range("count", count, 0, MAX_PINGS) == ERROR:
+		return ERROR
 	for i in range(count):
 		log.info(f"PING #{i + 1}")
 		start = time.time_ns()
@@ -21,6 +28,8 @@ def ping(count = 1):
 	return SUCCESS
 
 def cycle(speed):
+	if verify_range("speed", speed, 0, UINT8_MAX) == ERROR:
+		return ERROR
 	log.info(f"CYCLE {colours.YELLOW}speed{colours.RESET}: {speed}")
 	payload = struct.pack("<B", speed)
 	if link.request(Opcode.CYCLE, payload) == ERROR:
@@ -31,6 +40,8 @@ def cycle(speed):
 
 def colour(red, green, blue):
 	rgb = RGB(red, green, blue)
+	if rgb.verify() == ERROR:
+		return ERROR
 	log.info(f"COLOUR {rgb}")
 	payload = rgb.pack()
 	if link.request(Opcode.COLOUR, payload) == ERROR:
@@ -41,6 +52,8 @@ def colour(red, green, blue):
 
 def brightness(red, green, blue):
 	rgb = RGB(red, green, blue)
+	if rgb.verify() == ERROR:
+		return ERROR
 	log.info(f"BRIGHTNESS {rgb}")
 	payload = rgb.pack()
 	if link.request(Opcode.BRIGHTNESS, payload) == ERROR:

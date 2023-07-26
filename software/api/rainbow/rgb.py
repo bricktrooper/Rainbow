@@ -1,6 +1,9 @@
 import struct
 
 from log import colours
+from cli import ERROR, SUCCESS
+
+from .utilities import verify_range, UINT8_MAX
 
 class RGB:
 	FORMAT = "<BBB"   # little endian
@@ -34,3 +37,12 @@ class RGB:
 			self.green,
 			self.blue,
 		)
+
+	def verify(self):
+		if verify_range("red", self.red, 0, UINT8_MAX) == ERROR:
+			return ERROR
+		if verify_range("green", self.green, 0, UINT8_MAX) == ERROR:
+			return ERROR
+		if verify_range("blue", self.blue, 0, UINT8_MAX) == ERROR:
+			return ERROR
+		return SUCCESS
