@@ -9,23 +9,16 @@ TEMP = "temp"
 shutil.rmtree(TEMP, ignore_errors = True)
 
 os.mkdir(TEMP)
-os.chdir(TEMP)
 
-os.system(f"git clone {LOG} Logs")
-os.chdir("Logs/python/")
-os.system("pip3 install .")
-os.chdir("../../")
+os.system(f"git clone {LOG} {TEMP}/Logs")
+os.system(f"pip3 install {TEMP}/Logs/python")
 
-os.system(f"git clone {CLI} CLI")
-os.chdir("CLI/")
-os.system("pip3 install .")
-os.chdir("../../")
+os.system(f"git clone {CLI} {TEMP}/CLI")
+os.system(f"pip3 install {TEMP}/CLI")
 
 shutil.rmtree(TEMP)
 
-os.chdir("api")
-os.system("pip install .")
-os.chdir("..")
+os.system("pip install api")
 
 if os.path.exists("/usr/local/bin/rainbow"):
     print("/usr/local/bin/rainbow already exists")
