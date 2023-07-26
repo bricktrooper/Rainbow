@@ -140,6 +140,7 @@ def listen():
 		data = uart.receive(Header.MAGIC_SIZE)
 		if len(data) != Header.MAGIC_SIZE:
 			log.error(f"Did not receive magic number")
+			uart.purge()
 			return ERROR
 		fields = struct.unpack(Header.MAGIC_FORMAT, data)
 		magic = fields[0]
@@ -148,6 +149,7 @@ def listen():
 	data += uart.receive(Header.SIZE - Header.MAGIC_SIZE)
 	if len(data) != Header.SIZE:
 		log.error(f"Did not receive header")
+		uart.purge()
 		return ERROR
 
 	# unpack entire header
@@ -158,6 +160,7 @@ def listen():
 	payload = uart.receive(header.length)
 	if len(payload) != header.length:
 		log.error(f"Did not receive payload")
+		uart.purge()
 		return ERROR
 	header.payload = payload
 
@@ -166,6 +169,7 @@ def listen():
 	# verify response packet
 	if verify(header, payload) == ERROR:
 		log.error(f"Received invalid response packet")
+		uart.purge()
 		return ERROR
 
 	result = Result(struct.unpack("<B", payload)[0])
