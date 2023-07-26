@@ -35,12 +35,13 @@ static void wait(void)
 
 static void verify(void)
 {
-	wait();   // wait for HC-05 to respond
+	led_on();
+	while (uart_peek_tx() > 0);          // wait for TX data to be transmitted
+	char response [4];
+	uart_read(response, sizeof(response));   // receive response from HC-05
+	led_off();
 
-	char buffer [4];
-	uart_read(buffer, sizeof(buffer));
-
-	if (strncmp(buffer, "OK" NEWLINE, sizeof(buffer)))
+	if (strncmp(response, "OK" NEWLINE, sizeof(response)))
 	{
 		// abort and blink error code
 		while (1)
@@ -50,7 +51,6 @@ static void verify(void)
 		}
 	}
 
-	led_blink(count);
 	count++;
 }
 
@@ -130,8 +130,14 @@ void hc05(char const * name)
 	at_uart(baud_rate, 0, false);   // UART settings
 	at_name(name);                  // Bluetooth wireless name
 
-	wait();
 	uart_set_baud_rate(baud_rate);   // restore original baud rate
-	led_on();                        // turn LED on to indicate end of program
-	while (1);
+
+	// blink LED slowly to indicate end of program
+	while (1)
+	{
+		led_on();
+		wait();
+		led_off();
+		wait();
+	}
 }
