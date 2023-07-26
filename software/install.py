@@ -4,25 +4,22 @@ import shutil
 LOG = "https://github.com/bricktrooper/Logs"
 CLI = "https://github.com/bricktrooper/CLI"
 
-TEMP = "temp"
+os.system(f"git clone {LOG} repo/")
+os.system(f"pip3 install repo/python")
+shutil.rmtree("repo/", ignore_errors = True)
 
-shutil.rmtree(TEMP, ignore_errors = True)
+os.system(f"git clone {CLI} repo/")
+os.system(f"pip3 install repo/")
+shutil.rmtree("repo/", ignore_errors = True)
 
-os.mkdir(TEMP)
-
-os.system(f"git clone {LOG} {TEMP}/Logs")
-os.system(f"pip3 install {TEMP}/Logs/python")
-
-os.system(f"git clone {CLI} {TEMP}/CLI")
-os.system(f"pip3 install {TEMP}/CLI")
-
-shutil.rmtree(TEMP)
-
-os.system("pip install api")
+os.system("pip install api/")
+shutil.rmtree("api/build", ignore_errors = True)
+shutil.rmtree("api/dist", ignore_errors = True)
+shutil.rmtree("api/rainbow.egg-info", ignore_errors = True)
 
 if os.path.exists("/usr/local/bin/rainbow"):
     print("/usr/local/bin/rainbow already exists")
-    exit()
+    exit(-1)
 
 path = os.getcwd()
 os.chdir("/usr/local/bin")

@@ -1,12 +1,12 @@
 from distutils.core import setup
 
 setup(
-    name = "rainbow",
-	version = "0.0.0",
+	name = "rainbow",
+	version = "0.1.0",
 	description = "API for interacting with the Rainbow RGB controller board.",
 	author = "Kyle Pinto",
 	author_email = "kylepinto1018@gmail.com",
-    url = "https://github.com/bricktrooper/Rainbow",
+	url = "https://github.com/bricktrooper/Rainbow",
 	packages = ["rainbow"],
-    dependencies = ["log", "cli", "pyserial"]
+	dependencies = ["log", "cli", "pyserial"]
 )
