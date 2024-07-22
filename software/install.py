@@ -17,6 +17,8 @@ shutil.rmtree("api/build", ignore_errors = True)
 shutil.rmtree("api/dist", ignore_errors = True)
 shutil.rmtree("api/rainbow.egg-info", ignore_errors = True)
 
+os.system("pip install pyserial")
+
 if os.path.exists("/usr/local/bin/rainbow"):
     print("/usr/local/bin/rainbow already exists")
     exit(-1)
